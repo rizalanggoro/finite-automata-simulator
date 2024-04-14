@@ -4,6 +4,7 @@ import ContainerComponent from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -16,6 +17,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  DFACheckDataProps,
   DFAMinimizationDataProps,
   dfaMinimizationRepository,
 } from "@/lib/repositories/dfa-minimization";
@@ -36,6 +38,7 @@ export default function Page() {
   const [relations, setRelations] = useState(
     "C,D\nH,D\nF,E\nE,F\nA,E\nF,B\nE,F\nF,E"
   );
+  const [checkInputString, setCheckInputString] = useState("1011");
 
   const [diagram, setDiagram] = useState({
     initial: "",
@@ -44,6 +47,12 @@ export default function Page() {
 
   const [dfaMinimizationData, setDfaMinimizationData] = useState<
     DFAMinimizationDataProps | undefined
+  >();
+  const [dfaCheckInitialData, setDfaCheckInitialData] = useState<
+    DFACheckDataProps | undefined
+  >();
+  const [dfaCheckMinifiedData, setDfaCheckMinifiedData] = useState<
+    DFACheckDataProps | undefined
   >();
 
   const onClickButtonGenerate = () => {
@@ -57,8 +66,6 @@ export default function Page() {
 
     setDfaMinimizationData(minimizationData);
 
-    console.log({ minimizationData });
-
     setDiagram({
       initial: dfaMinimizationRepository.generateDiagramCode({
         alphabets: alphabets.toLowerCase(),
@@ -71,6 +78,30 @@ export default function Page() {
         ...minimizationData.input,
       }),
     });
+  };
+
+  const onClickButtonCheck = () => {
+    if (dfaMinimizationData) {
+      setDfaCheckInitialData(
+        dfaMinimizationRepository.checkInputString(
+          {
+            alphabets: alphabets.toLowerCase(),
+            states: states.toLowerCase(),
+            startState: startState.toLowerCase(),
+            finalStates: acceptingStates.toLowerCase(),
+            transitions: relations.toLowerCase(),
+          },
+          checkInputString
+        )
+      );
+
+      setDfaCheckMinifiedData(
+        dfaMinimizationRepository.checkInputString(
+          dfaMinimizationData.input,
+          checkInputString
+        )
+      );
+    }
   };
 
   return (
@@ -134,13 +165,13 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="mt-4 flex justify-end space-x-2">
-          <Button variant={"secondary"}>Fill random</Button>
+        <div className="mt-4 flex justify-end">
           <Button onClick={onClickButtonGenerate}>Generate</Button>
         </div>
 
         {dfaMinimizationData && (
           <>
+            <Separator className="mt-8" />
             <p className="font-semibold text-2xl mt-8">Step by step</p>
             <Table className="mt-4">
               <TableHeader>
@@ -185,6 +216,85 @@ export default function Page() {
 
         {dfaMinimizationData && (
           <>
+            <Separator className="mt-8" />
+            <p className="font-semibold text-2xl mt-8">Check user from input</p>
+            <div className="space-y-1 mt-4">
+              <Label>Masukkan string</Label>
+              <Input
+                placeholder="101010..."
+                value={checkInputString}
+                onChange={(e) => setCheckInputString(e.target.value)}
+                className="lowercase"
+              />
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <Button onClick={onClickButtonCheck}>Check</Button>
+            </div>
+
+            <p className="font-semibold text-xl mt-8">Step by step</p>
+            {dfaCheckInitialData && dfaCheckMinifiedData && (
+              <>
+                <Table className="mt-4">
+                  <TableHeader>
+                    <TableRow className="border-none">
+                      <TableHead colSpan={1} rowSpan={2}>
+                        String
+                      </TableHead>
+                      <TableHead colSpan={4}>Initial</TableHead>
+                      <TableHead colSpan={4}>Minified</TableHead>
+                    </TableRow>
+                    <TableRow>
+                      <TableHead colSpan={2}>from</TableHead>
+                      <TableHead colSpan={2}>to</TableHead>
+                      <TableHead colSpan={2}>from</TableHead>
+                      <TableHead colSpan={2}>to</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from(
+                      Array(dfaCheckInitialData.history.length).keys()
+                    ).map((item) => (
+                      <TableRow>
+                        <TableCell colSpan={1}>
+                          {dfaCheckInitialData.history[item].str}
+                        </TableCell>
+                        <TableCell colSpan={2}>
+                          {dfaCheckInitialData.history[item].from}
+                        </TableCell>
+                        <TableCell colSpan={2}>
+                          {dfaCheckInitialData.history[item].to}
+                        </TableCell>
+                        <TableCell colSpan={2}>
+                          {dfaCheckMinifiedData.history[item].from}
+                        </TableCell>
+                        <TableCell colSpan={2}>
+                          {dfaCheckMinifiedData.history[item].to}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell colSpan={3}>Acceptance</TableCell>
+                      <TableCell colSpan={2}>
+                        {String(dfaCheckInitialData.isAccept)}
+                      </TableCell>
+                      <TableCell colSpan={2}></TableCell>
+                      <TableCell colSpan={2}>
+                        {String(dfaCheckMinifiedData.isAccept)}
+                      </TableCell>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </>
+            )}
+          </>
+        )}
+
+        {dfaMinimizationData && (
+          <>
+            <Separator className="mt-8" />
             <p className="font-semibold text-2xl mt-8">Diagram</p>
             <Tabs defaultValue="initial" className="w-full mt-4">
               <TabsList className="w-full">

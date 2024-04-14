@@ -26,6 +26,15 @@ export type DFAMinimizationDataProps = {
   };
 };
 
+export type DFACheckDataProps = {
+  isAccept: boolean;
+  history: Array<{
+    str: string;
+    from: string;
+    to: string;
+  }>;
+};
+
 const generateDFAData = (props: DFAInputProps): DFADataProps => {
   const states = props.states.split(",");
   const alphabets = props.alphabets.split(",");
@@ -297,8 +306,45 @@ const generateMinimization = (
   };
 };
 
+const checkInputString = (
+  input: DFAInputProps,
+  inputString: string
+): DFACheckDataProps => {
+  const data = generateDFAData(input);
+  const startState = data.startState;
+
+  const history: Array<{
+    str: string;
+    from: string;
+    to: string;
+  }> = [];
+
+  const inputStrings = inputString.split("");
+  let currentState = startState;
+
+  for (const str of inputStrings) {
+    const destinations = data.transitions[currentState];
+    const toState = destinations[str];
+
+    history.push({
+      str,
+      from: currentState,
+      to: toState,
+    });
+    currentState = toState;
+  }
+
+  const isAccept = data.finalStates.includes(currentState);
+
+  return {
+    isAccept,
+    history,
+  };
+};
+
 export const dfaMinimizationRepository = {
   generateDFAData,
   generateDiagramCode,
   generateMinimization,
+  checkInputString,
 };
