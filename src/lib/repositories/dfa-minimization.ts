@@ -1,4 +1,4 @@
-type DFAIOProps = {
+type DFAInputProps = {
   states: string;
   startState: string;
   finalStates: string;
@@ -18,7 +18,15 @@ type DFADataProps = {
   };
 };
 
-const generateDFAData = (props: DFAIOProps): DFADataProps => {
+export type DFAMinimizationDataProps = {
+  input: DFAInputProps;
+  data: DFADataProps;
+  table: {
+    [key: string]: Array<Array<string>>;
+  };
+};
+
+const generateDFAData = (props: DFAInputProps): DFADataProps => {
   const states = props.states.split(",");
   const alphabets = props.alphabets.split(",");
   const startState = props.startState;
@@ -76,7 +84,7 @@ const findStateIndexInPairStates = (state: string, pairStates: string[][]) => {
 };
 
 // done
-const generateDiagramCode = (input: DFAIOProps) => {
+const generateDiagramCode = (input: DFAInputProps) => {
   const data: DFADataProps = generateDFAData(input);
 
   let code = "flowchart LR\n";
@@ -107,7 +115,9 @@ const generateDiagramCode = (input: DFAIOProps) => {
   return code;
 };
 
-const generateMinimization = (input: DFAIOProps) => {
+const generateMinimization = (
+  input: DFAInputProps
+): DFAMinimizationDataProps => {
   const data = generateDFAData(input);
 
   // remove all unreachable states
@@ -272,16 +282,23 @@ const generateMinimization = (input: DFAIOProps) => {
     resultStartState = lastPairStates[index][0];
   }
 
-  return {
+  const inputResult: DFAInputProps = {
     alphabets: data.alphabets.join(),
     states: resultStates.join(),
     startState: resultStartState,
     finalStates: resultFinalStates.join(),
     transitions: resultTransitions.join("\n"),
-  } as DFAIOProps;
+  };
+
+  return {
+    input: inputResult,
+    data: generateDFAData(inputResult),
+    table,
+  };
 };
 
 export const dfaMinimizationRepository = {
+  generateDFAData,
   generateDiagramCode,
   generateMinimization,
 };
