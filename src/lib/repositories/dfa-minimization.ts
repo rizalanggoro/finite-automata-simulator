@@ -122,8 +122,8 @@ const generateMinimization = (input: DFAIOProps) => {
     }
   }
 
-  const reachableStates = data.states.filter((item) =>
-    destinationStates.includes(item)
+  const reachableStates = data.states.filter(
+    (item) => destinationStates.includes(item) || item === data.startState
   );
 
   // table to hold all subsets
