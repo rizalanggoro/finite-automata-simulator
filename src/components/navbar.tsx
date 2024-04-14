@@ -1,0 +1,44 @@
+import Link from "next/link";
+import ContainerComponent from "./container";
+import { Button } from "./ui/button";
+
+type MenuItem = {
+  title: string;
+  href: string;
+};
+const menus: Array<MenuItem> = [
+  { title: "Dokumentasi", href: "/docs" },
+  { title: "Tentang", href: "/about" },
+];
+
+export default function NavbarComponent() {
+  return (
+    <>
+      <div className="border-b h-16 w-full fixed top-0 z-10 backdrop-blur bg-background/10">
+        <ContainerComponent
+          variant="lg"
+          className="flex items-center justify-between h-16"
+        >
+          <Link href={"/"}>
+            <Button variant={"link"} className="text-primary font-semibold">
+              Finite Automata
+            </Button>
+          </Link>
+
+          <div>
+            {menus.map((menu, index) => (
+              <Link href={menu.href}>
+                <Button
+                  variant={"link"}
+                  className="text-muted-foreground font-normal"
+                >
+                  {menu.title}
+                </Button>
+              </Link>
+            ))}
+          </div>
+        </ContainerComponent>
+      </div>
+    </>
+  );
+}
