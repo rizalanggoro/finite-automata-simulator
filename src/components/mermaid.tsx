@@ -10,10 +10,6 @@ export default function MermaidComponent({
   chart: string;
   id: string;
 }) {
-  // useEffect(() => {
-  //   document.getElementById(id)?.removeAttribute("data-processed");
-  //   mermaid.contentLoaded();
-  // }, [chart, id]);
   useEffect(() => {
     document.getElementById(id)?.removeAttribute("data-processed");
     mermaid.contentLoaded();
