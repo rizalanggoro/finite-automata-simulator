@@ -18,7 +18,7 @@ const menus: Array<MenuItem> = [
     title: "NFA, e-NFA Konverter",
     description:
       "Simulator untuk menghasilkan sebuah DFA berdasarkan masukan NFA atau e-NFA dari pengguna",
-    href: "/",
+    href: "/nfa-enfa-converter",
   },
   {
     title: "Regex Koverter",

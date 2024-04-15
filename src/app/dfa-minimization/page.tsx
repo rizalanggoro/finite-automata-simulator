@@ -1,6 +1,13 @@
 "use client";
 
 import ContainerComponent from "@/components/container";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -107,8 +114,22 @@ export default function Page() {
   return (
     <>
       <ContainerComponent safeTop variant="md" className="py-8">
-        <p className="text-3xl font-semibold">Minimalisasi DFA</p>
-        <p>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dfa-minimization">
+                Minimisasi DFA
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <p className="text-3xl font-semibold mt-4">Minimisasi DFA</p>
+        <p className="mt-2">
           Simulator untuk mengubah DFA menjadi minimal dimana pengguna dapat
           mengetes kedua DFA tersebut (sebelum dan sesudah minimalisasi)
         </p>
