@@ -31,9 +31,13 @@ const generateDFA = (data: DFADataProps): string => {
     for (const alphabet of data.alphabets) {
       const state = transition[0];
       const destination = transition[1][alphabet];
-      code += "\n" + state + " -- " + alphabet + " --> " + destination;
+      if (destination.length > 0)
+        code += "\n" + state + " -- " + alphabet + " --> " + destination;
+      else code += "\n" + state + " -- " + alphabet + " --> empty((∅))";
     }
   }
+
+  console.log(code);
 
   return code;
 };

@@ -207,6 +207,8 @@ const generateDFAData = (
       if (dfaTable[state][alphabet]) {
         const nextState = dfaTable[state][alphabet].join();
         innerTransitions[alphabet] = nextState;
+      } else {
+        innerTransitions[alphabet] = "";
       }
     }
     transitions[state] = innerTransitions;
