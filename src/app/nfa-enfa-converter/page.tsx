@@ -49,11 +49,11 @@ export default function Page() {
 
   const onClickButtonGenerate = () => {
     const result = nfaConverterRepository.generateDFA({
-      alphabets,
-      states,
-      startState,
-      finalStates,
-      transitions,
+      alphabets: alphabets.toLowerCase(),
+      states: states.toLowerCase(),
+      startState: startState.toLowerCase(),
+      finalStates: finalStates.toLowerCase(),
+      transitions: transitions.toLowerCase(),
       type: faType,
     });
 
