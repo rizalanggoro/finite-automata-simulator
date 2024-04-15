@@ -239,6 +239,11 @@ export default function Page() {
           <>
             <Separator className="mt-8" />
             <p className="font-semibold text-2xl mt-8">Check user from input</p>
+            <p className="mt-2">
+              Silakan masukkan string berdasarkan kombinasi {alphabets} untuk
+              memeriksa apakah string tersebut diterima atau ditolak oleh kedua
+              deterministic finite automata
+            </p>
             <div className="space-y-1 mt-4">
               <Label>Masukkan string</Label>
               <Input
@@ -317,6 +322,11 @@ export default function Page() {
           <>
             <Separator className="mt-8" />
             <p className="font-semibold text-2xl mt-8">Diagram</p>
+            <p className="mt-2">
+              Berikut merupakan diagram deterministic finite automata dalam
+              bentuk awal dan setelah diminimisasi berdasarkan masukan yang
+              diberikan
+            </p>
             <Tabs defaultValue="initial" className="w-full mt-4">
               <TabsList className="w-full">
                 <TabsTrigger value="initial" className="w-full">
@@ -326,13 +336,13 @@ export default function Page() {
                   Minified
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="initial">
+              <TabsContent value="initial" className="mt-4">
                 <MermaidComponent
                   id="initial-diagram"
                   chart={diagram.initial}
                 />
               </TabsContent>
-              <TabsContent value="minified">
+              <TabsContent value="minified" className="mt-4">
                 <MermaidComponent
                   id="minified-diagram"
                   chart={diagram.minified}
