@@ -36,11 +36,11 @@ import {
 import { useState } from "react";
 
 export default function Page() {
-  const [alphabets, setAlphabets] = useState("0,1");
-  const [states, setStates] = useState("p,q,r,s");
-  const [startState, setStartState] = useState("p");
-  const [finalStates, setFinalStates] = useState("s");
-  const [transitions, setTransitions] = useState("p,q;p\nr;r\ns;\ns;s");
+  const [alphabets, setAlphabets] = useState("a,b");
+  const [states, setStates] = useState("s0,s1");
+  const [startState, setStartState] = useState("s0");
+  const [finalStates, setFinalStates] = useState("s1");
+  const [transitions, setTransitions] = useState("s1;s0,s1\ns0;s1");
   const [faType, setFaType] = useState("nfa");
 
   const [nfa2dfaData, setNfa2dfaData] = useState<

@@ -88,15 +88,18 @@ const generateDFATable = (data: NFADataProps) => {
             for (const _destination of destination[1]) {
               if (!innerTable[destination[0]].includes(_destination)) {
                 innerTable[destination[0]].push(_destination);
+                innerTable[destination[0]].sort();
               }
             }
           } else {
             innerTable[destination[0]] = [...destination[1]];
+            innerTable[destination[0]].sort();
           }
         }
 
         for (const alphabet of data.alphabets) {
           const newState = innerTable[alphabet].join();
+
           if (
             newState != currentState &&
             newState.indexOf(",") !== -1 &&
