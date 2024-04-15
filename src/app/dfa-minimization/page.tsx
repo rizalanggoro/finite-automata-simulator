@@ -253,9 +253,9 @@ export default function Page() {
               <Button onClick={onClickButtonCheck}>Check</Button>
             </div>
 
-            <p className="font-semibold text-xl mt-8">Step by step</p>
             {dfaCheckInitialData && dfaCheckMinifiedData && (
               <>
+                <p className="font-semibold text-xl mt-8">Step by step</p>
                 <Table className="mt-4">
                   <TableHeader>
                     <TableRow className="border-none">
