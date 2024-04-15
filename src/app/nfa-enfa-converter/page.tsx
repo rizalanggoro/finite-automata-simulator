@@ -29,12 +29,18 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { diagramRepository } from "@/lib/repositories/diagram";
 import {
   NFA2DFADataProps,
   nfaConverterRepository,
 } from "@/lib/repositories/nfa-enfa-converter";
 import { ArrowRight } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
+
+const MermaidComponent = dynamic(() => import("@/components/mermaid"), {
+  ssr: false,
+});
 
 export default function Page() {
   const [alphabets, setAlphabets] = useState("a,b");
@@ -48,6 +54,12 @@ export default function Page() {
     NFA2DFADataProps | undefined
   >();
 
+  const [diagram, setDiagram] = useState({
+    nfa: "",
+    eNfa: "",
+    dfa: "",
+  });
+
   const onClickButtonGenerate = () => {
     const result = nfaConverterRepository.generateDFA({
       alphabets: alphabets.toLowerCase(),
@@ -58,7 +70,15 @@ export default function Page() {
       type: faType,
     });
 
+    console.log(result);
+
     setNfa2dfaData(result);
+
+    setDiagram({
+      nfa: diagramRepository.generateNFA(result.data),
+      eNfa: "",
+      dfa: diagramRepository.generateDFA(result.dfaData),
+    });
   };
 
   return (
@@ -206,7 +226,7 @@ export default function Page() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {Object.entries(nfa2dfaData.filteredTable).map((item) => {
+                {Object.entries(nfa2dfaData.dfaTable).map((item) => {
                   const state = item[0];
 
                   return (
@@ -215,7 +235,7 @@ export default function Page() {
                         {nfa2dfaData.data.startState === state && (
                           <ArrowRight className="inline w-4 h-4 mr-2" />
                         )}
-                        {nfa2dfaData.finalStates.includes(state) ? "*" : ""}
+                        {nfa2dfaData.dfaFinalStates.includes(state) ? "*" : ""}
                         {state}
                       </TableCell>
                       {nfa2dfaData.data.alphabets.map((alphabet) => {
@@ -234,24 +254,28 @@ export default function Page() {
           </>
         )}
 
-        <>
-          <Separator className="mt-8" />
+        {nfa2dfaData && diagram && (
+          <>
+            <Separator className="mt-8" />
 
-          <p className="font-semibold text-2xl mt-8">Diagram</p>
+            <p className="font-semibold text-2xl mt-8">Diagram</p>
 
-          <Tabs defaultValue="nfa" className="w-full mt-4">
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="nfa">
-                {faType === "nfa" ? "NFA" : "Epsilon NFA"}
-              </TabsTrigger>
-              <TabsTrigger value="dfa">DFA</TabsTrigger>
-            </TabsList>
-            <TabsContent value="nfa">
-              Make changes to your account here.
-            </TabsContent>
-            <TabsContent value="dfa">Change your password here.</TabsContent>
-          </Tabs>
-        </>
+            <Tabs defaultValue="nfa" className="w-full mt-4">
+              <TabsList className="w-full grid grid-cols-2">
+                <TabsTrigger value="nfa">
+                  {faType === "nfa" ? "NFA" : "Epsilon NFA"}
+                </TabsTrigger>
+                <TabsTrigger value="dfa">DFA</TabsTrigger>
+              </TabsList>
+              <TabsContent value="nfa">
+                <MermaidComponent id="diagram-nfa" chart={diagram.nfa} />
+              </TabsContent>
+              <TabsContent value="dfa">
+                <MermaidComponent id="diagram-dfa" chart={diagram.dfa} />
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
       </ContainerComponent>
     </>
   );

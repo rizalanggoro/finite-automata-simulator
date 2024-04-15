@@ -1,3 +1,5 @@
+import { DFADataProps } from "../types/dfa";
+
 type NFAInputProps = {
   alphabets: string;
   states: string;
@@ -29,8 +31,9 @@ type DFATableProps = {
 export type NFA2DFADataProps = {
   data: NFADataProps;
   table: DFATableProps;
-  filteredTable: DFATableProps;
-  finalStates: string[];
+  dfaData: DFADataProps;
+  dfaTable: DFATableProps;
+  dfaFinalStates: string[];
 };
 
 const generateNFAData = (input: NFAInputProps): NFADataProps => {
@@ -182,23 +185,54 @@ const generateDFAFilteredTableData = (
   };
 };
 
+const generateDFAData = (
+  data: NFADataProps,
+  dfaTable: DFATableProps,
+  dfaFinalStates: string[]
+): DFADataProps => {
+  const transitions: {
+    [key: string]: {
+      [key: string]: string;
+    };
+  } = {};
+
+  for (const state of Object.keys(dfaTable)) {
+    const innerTransitions: {
+      [key: string]: string;
+    } = {};
+
+    for (const alphabet of data.alphabets) {
+      const nextState = dfaTable[state][alphabet].join();
+      innerTransitions[alphabet] = nextState;
+    }
+    transitions[state] = innerTransitions;
+  }
+
+  return {
+    alphabets: data.alphabets,
+    startState: data.startState,
+    finalStates: dfaFinalStates,
+    states: Object.keys(dfaTable),
+    transitions,
+  };
+};
+
 const generateDFA = (input: NFAInputProps): NFA2DFADataProps => {
   const data = generateNFAData(input);
   const table = generateDFATable(data);
   const filteredTableData = generateDFAFilteredTableData(data, table);
-
-  console.log({
+  const dfaData = generateDFAData(
     data,
-    table,
-    filteredTable: filteredTableData.table,
-    finalStates: filteredTableData.finalStates,
-  });
+    filteredTableData.table,
+    filteredTableData.finalStates
+  );
 
   return {
     data,
     table,
-    filteredTable: filteredTableData.table,
-    finalStates: filteredTableData.finalStates,
+    dfaData,
+    dfaTable: filteredTableData.table,
+    dfaFinalStates: filteredTableData.finalStates,
   };
 };
 

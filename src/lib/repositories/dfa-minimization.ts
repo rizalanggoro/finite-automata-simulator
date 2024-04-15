@@ -1,3 +1,5 @@
+import { DFADataProps } from "../types/dfa";
+
 type DFAInputProps = {
   states: string;
   startState: string;
@@ -6,17 +8,17 @@ type DFAInputProps = {
   transitions: string;
 };
 
-type DFADataProps = {
-  states: Array<string>;
-  startState: string;
-  finalStates: Array<string>;
-  alphabets: Array<string>;
-  transitions: {
-    [key: string]: {
-      [key: string]: string;
-    };
-  };
-};
+// type DFADataProps = {
+//   states: Array<string>;
+//   startState: string;
+//   finalStates: Array<string>;
+//   alphabets: Array<string>;
+//   transitions: {
+//     [key: string]: {
+//       [key: string]: string;
+//     };
+//   };
+// };
 
 export type DFAMinimizationDataProps = {
   input: DFAInputProps;
