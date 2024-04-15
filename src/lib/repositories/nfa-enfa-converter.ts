@@ -1,26 +1,4 @@
-import { DFADataProps } from "../types/types";
-
-type NFAInputProps = {
-  alphabets: string;
-  states: string;
-  startState: string;
-  finalStates: string;
-  transitions: string;
-  type: string | "nfa" | "e-nfa";
-};
-
-type NFADataProps = {
-  alphabets: string[];
-  states: string[];
-  startState: string;
-  finalStates: string[];
-  transitions: {
-    [key: string]: {
-      [key: string]: string[];
-    };
-  };
-  type: string | "nfa" | "e-nfa";
-};
+import { DFADataProps, NFADataProps, NFAInputProps } from "../types/types";
 
 type DFATableProps = {
   [key: string]: {
@@ -47,20 +25,36 @@ const generateNFAData = (input: NFAInputProps): NFADataProps => {
     };
   } = {};
 
-  const _transitions = input.transitions.split("\n").map((item) => {
-    const destinations = item.split(";");
-    const map: {
-      [key: string]: string[];
-    } = {};
-    for (let a = 0; a < destinations.length; a++)
-      if (destinations[a].length > 0)
-        map[alphabets[a]] = destinations[a].split(",");
+  for (const transition of Object.entries(input.transitions)) {
+    const key = transition[0].toLowerCase();
+    const value = transition[1].toLowerCase();
 
-    return map;
-  });
+    const innerTransitions: { [key: string]: string[] } = {};
 
-  for (let a = 0; a < _transitions.length; a++)
-    transitions[states[a]] = _transitions[a];
+    const statesByAlphabet = value.split(";");
+    for (let a = 0; a < alphabets.length; a++) {
+      const alphabet = alphabets[a];
+      if (statesByAlphabet[a].length > 0)
+        innerTransitions[alphabet] = statesByAlphabet[a].split(",");
+    }
+
+    transitions[key] = innerTransitions;
+  }
+
+  // const _transitions = input.transitions.split("\n").map((item) => {
+  //   const destinations = item.split(";");
+  //   const map: {
+  //     [key: string]: string[];
+  //   } = {};
+  //   for (let a = 0; a < destinations.length; a++)
+  //     if (destinations[a].length > 0)
+  //       map[alphabets[a]] = destinations[a].split(",");
+
+  //   return map;
+  // });
+
+  // for (let a = 0; a < _transitions.length; a++)
+  //   transitions[states[a]] = _transitions[a];
 
   return {
     states,
@@ -68,7 +62,6 @@ const generateNFAData = (input: NFAInputProps): NFADataProps => {
     startState,
     finalStates,
     transitions,
-    type: input.type,
   };
 };
 
