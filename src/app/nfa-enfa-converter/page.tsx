@@ -23,16 +23,17 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   NFA2DFADataProps,
   nfaConverterRepository,
 } from "@/lib/repositories/nfa-enfa-converter";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 
 export default function Page() {
@@ -148,6 +149,53 @@ export default function Page() {
             <Separator className="mt-8" />
             <p className="text-2xl font-semibold mt-8">Conversion Table</p>
 
+            <p className="mt-2">
+              Berikut tabel nondeterministic finite automata berdasarkan masukan
+              yang diberikan sebelum dilakukan konversi{" "}
+            </p>
+
+            <Table className="mt-4">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>States</TableHead>
+                  {nfa2dfaData.data.alphabets.map((item) => (
+                    <TableHead>{item}</TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Object.entries(nfa2dfaData.data.transitions).map((item) => {
+                  const state = item[0];
+
+                  return (
+                    <TableRow>
+                      <TableCell>
+                        {nfa2dfaData.data.startState === state && (
+                          <ArrowRight className="inline w-4 h-4 mr-2" />
+                        )}
+                        {nfa2dfaData.data.finalStates.includes(state)
+                          ? "*"
+                          : ""}
+                        {state}
+                      </TableCell>
+                      {nfa2dfaData.data.alphabets.map((alphabet) => {
+                        const transition = item[1][alphabet];
+                        return (
+                          <TableCell>
+                            {transition ? transition.join(",") : "∅"}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+
+            <p className="mt-4">
+              Berikut tabel hasil konversi dari nondeterministic finite automata
+              menjadi deterministic finite automata
+            </p>
             <Table className="mt-4">
               <TableHeader>
                 <TableRow>
@@ -163,28 +211,47 @@ export default function Page() {
 
                   return (
                     <TableRow>
-                      <TableCell>{state}</TableCell>
+                      <TableCell>
+                        {nfa2dfaData.data.startState === state && (
+                          <ArrowRight className="inline w-4 h-4 mr-2" />
+                        )}
+                        {nfa2dfaData.finalStates.includes(state) ? "*" : ""}
+                        {state}
+                      </TableCell>
                       {nfa2dfaData.data.alphabets.map((alphabet) => {
                         const transition = item[1][alphabet];
-                        return <TableCell>{transition.join(",")}</TableCell>;
+                        return (
+                          <TableCell>
+                            {transition ? transition.join(",") : "∅"}
+                          </TableCell>
+                        );
                       })}
                     </TableRow>
                   );
                 })}
               </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TableCell>Final states</TableCell>
-                  <TableCell colSpan={nfa2dfaData.data.alphabets.length}>
-                    {"{"}
-                    {nfa2dfaData.finalStates.join("} {")}
-                    {"}"}
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
             </Table>
           </>
         )}
+
+        <>
+          <Separator className="mt-8" />
+
+          <p className="font-semibold text-2xl mt-8">Diagram</p>
+
+          <Tabs defaultValue="nfa" className="w-full mt-4">
+            <TabsList className="w-full grid grid-cols-2">
+              <TabsTrigger value="nfa">
+                {faType === "nfa" ? "NFA" : "Epsilon NFA"}
+              </TabsTrigger>
+              <TabsTrigger value="dfa">DFA</TabsTrigger>
+            </TabsList>
+            <TabsContent value="nfa">
+              Make changes to your account here.
+            </TabsContent>
+            <TabsContent value="dfa">Change your password here.</TabsContent>
+          </Tabs>
+        </>
       </ContainerComponent>
     </>
   );
