@@ -1,4 +1,4 @@
-import { DFADataProps } from "../types/dfa";
+import { DFADataProps } from "../types/types";
 
 type DFAInputProps = {
   states: string;

@@ -1,14 +1,5 @@
-type DFADataProps = {
-  states: string[];
-  startState: string;
-  finalStates: string[];
-  alphabets: string[];
-  transitions: {
-    [key: string]: {
-      [key: string]: string;
-    };
-  };
-};
+import { DFADataProps, NFADataProps } from "../types/types";
+
 const generateDFA = (data: DFADataProps): string => {
   let code = "flowchart LR\n";
 
@@ -42,17 +33,6 @@ const generateDFA = (data: DFADataProps): string => {
   return code;
 };
 
-type NFADataProps = {
-  states: string[];
-  startState: string;
-  finalStates: string[];
-  alphabets: string[];
-  transitions: {
-    [key: string]: {
-      [key: string]: string[];
-    };
-  };
-};
 const generateNFA = (data: NFADataProps): string => {
   let code = "flowchart LR";
 
