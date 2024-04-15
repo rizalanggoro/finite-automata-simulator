@@ -1,7 +1,10 @@
 import mermaid from "mermaid";
 import { useEffect } from "react";
 
-mermaid.initialize({});
+mermaid.initialize({
+  securityLevel: "loose",
+  theme: "neutral",
+});
 
 export default function MermaidComponent({
   chart,
