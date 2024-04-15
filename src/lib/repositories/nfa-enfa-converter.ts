@@ -101,15 +101,17 @@ const generateDFATable = (data: NFADataProps) => {
         }
 
         for (const alphabet of data.alphabets) {
-          const newState = innerTable[alphabet].join();
+          if (innerTable[alphabet]) {
+            const newState = innerTable[alphabet].join();
 
-          if (
-            newState != currentState &&
-            newState.indexOf(",") !== -1 &&
-            !Object.keys(table).includes(newState)
-          ) {
-            console.log({ newState });
-            newStates.push(newState);
+            if (
+              newState != currentState &&
+              newState.indexOf(",") !== -1 &&
+              !Object.keys(table).includes(newState)
+            ) {
+              console.log({ newState });
+              newStates.push(newState);
+            }
           }
         }
       }
@@ -202,8 +204,10 @@ const generateDFAData = (
     } = {};
 
     for (const alphabet of data.alphabets) {
-      const nextState = dfaTable[state][alphabet].join();
-      innerTransitions[alphabet] = nextState;
+      if (dfaTable[state][alphabet]) {
+        const nextState = dfaTable[state][alphabet].join();
+        innerTransitions[alphabet] = nextState;
+      }
     }
     transitions[state] = innerTransitions;
   }

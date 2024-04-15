@@ -43,11 +43,11 @@ const MermaidComponent = dynamic(() => import("@/components/mermaid"), {
 });
 
 export default function Page() {
-  const [alphabets, setAlphabets] = useState("a,b");
+  const [alphabets, setAlphabets] = useState("a,b,c");
   const [states, setStates] = useState("s0,s1");
   const [startState, setStartState] = useState("s0");
   const [finalStates, setFinalStates] = useState("s1");
-  const [transitions, setTransitions] = useState("s1;s0,s1\ns0;s1");
+  const [transitions, setTransitions] = useState("s1;s0,s1;\ns0;s1;");
   const [faType, setFaType] = useState("nfa");
 
   const [nfa2dfaData, setNfa2dfaData] = useState<
