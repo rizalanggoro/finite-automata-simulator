@@ -47,24 +47,28 @@ export default function Page() {
   //   q1: ";q2",
   //   q2: ";",
   // });
-  const [alphabets, setAlphabets] = useState("a,b,c");
-  const [states, setStates] = useState("q0,q1,q2");
+  const [alphabets, setAlphabets] = useState("a,b");
+  const [states, setStates] = useState("q0,q1,q2,q3,q4");
   const [startState, setStartState] = useState("q0");
-  const [finalStates, setFinalStates] = useState("q2");
+  const [finalStates, setFinalStates] = useState("q4");
   const [faType, setFaType] = useState("e-nfa");
   const [transitions, setTransitions] = useState<{
     [key: string]: string;
   }>({
-    q0: "q0;;",
-    q1: ";q1;",
-    q2: ";;q2",
+    q0: ";",
+    q1: "q2;q4",
+    q2: ";",
+    q3: ";",
+    q4: ";",
   });
   const [epsilons, setEpsilons] = useState<{
     [key: string]: string;
   }>({
     q0: "q1",
-    q1: "q2",
-    q2: "",
+    q1: "q3",
+    q2: "q4",
+    q3: "",
+    q4: "",
   });
   // const [alphabets, setAlphabets] = useState("0,1");
   // const [states, setStates] = useState("a,b,c,d,e,f");
@@ -130,6 +134,8 @@ export default function Page() {
         transitions: transitions,
         epsilons,
       });
+
+      console.log({ result });
 
       setENfa2dfaData(result);
       setDiagram({

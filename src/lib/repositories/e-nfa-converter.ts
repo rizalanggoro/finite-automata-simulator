@@ -10,11 +10,20 @@ const generateE_NFAData = (input: E_NFAInputProps): E_NFADataProps => {
   const alphabets = input.alphabets.toLowerCase().split(",");
   const startState = input.startState.toLowerCase();
   const finalStates = input.finalStates.toLowerCase().split(",");
-  const transitions: {
+
+  const transitionsTable: {
     [key: string]: {
       [key: string]: string[];
     };
   } = {};
+
+  for (const state of states) {
+    transitionsTable[state] = {};
+    for (const alphabet of alphabets) {
+      transitionsTable[state][alphabet] = [];
+    }
+  }
+
   const epsilonTransitions: {
     [key: string]: string[];
   } = {};
@@ -23,22 +32,19 @@ const generateE_NFAData = (input: E_NFAInputProps): E_NFADataProps => {
     const key = transition[0].toLowerCase();
     const value = transition[1].toLowerCase();
 
-    if (states.includes(key)) {
-      const innerTransitions: { [key: string]: string[] } = {};
-
-      const statesByAlphabet = value.split(";");
-      for (let a = 0; a < alphabets.length; a++) {
-        const alphabet = alphabets[a];
-        if (statesByAlphabet[a].length > 0)
-          innerTransitions[alphabet] = statesByAlphabet[a].split(",");
-        else {
-          innerTransitions[alphabet] = [];
-        }
+    const values = value.split(";");
+    let index = 0;
+    for (const alphabet of alphabets) {
+      const strCurrentValues: string = values[index];
+      if (strCurrentValues.length > 0) {
+        transitionsTable[key][alphabet] = strCurrentValues.split(",");
       }
 
-      transitions[key] = innerTransitions;
+      index++;
     }
   }
+
+  console.log("aaa", transitionsTable);
 
   // epsilon transitions
   for (const epsilonTransition of Object.entries(input.epsilons)) {
@@ -59,7 +65,7 @@ const generateE_NFAData = (input: E_NFAInputProps): E_NFADataProps => {
     alphabets,
     startState,
     finalStates,
-    transitions,
+    transitions: transitionsTable,
     epsilonTransitions,
   };
 };
@@ -147,10 +153,13 @@ const generateNewTransitions = (data: E_NFADataProps) => {
 
 const generateDFA = (input: E_NFAInputProps): E_NFA2DFADataProps => {
   const data = generateE_NFAData(input);
-  const newFinalStates = generateFinalStatesWithClosure(data);
-  const newTransitions = generateNewTransitions(data);
+  const strData = JSON.stringify(data);
+  const cloneData: E_NFADataProps = JSON.parse(strData);
 
-  console.log({ data, newFinalStates, newTransitions });
+  const newFinalStates = generateFinalStatesWithClosure(cloneData);
+  const newTransitions = generateNewTransitions(cloneData);
+
+  console.log("aaa", { data, newFinalStates, newTransitions });
 
   const nfaData = {
     ...data,
