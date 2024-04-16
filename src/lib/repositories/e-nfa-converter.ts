@@ -1,5 +1,9 @@
-import { E_NFADataProps, E_NFAInputProps } from "../types/types";
-import { nfaConverterRepository } from "./nfa-enfa-converter";
+import {
+  E_NFA2DFADataProps,
+  E_NFADataProps,
+  E_NFAInputProps,
+} from "../types/types";
+import { nfaConverterRepository } from "./nfa-converter";
 
 const generateE_NFAData = (input: E_NFAInputProps): E_NFADataProps => {
   const states = input.states.toLowerCase().split(",");
@@ -92,10 +96,7 @@ const generateFinalStatesWithClosure = (data: E_NFADataProps): string[] => {
   return newFinalStates;
 };
 
-const generateNewTransitions = (
-  data: E_NFADataProps,
-  newFinalStates: string[]
-) => {
+const generateNewTransitions = (data: E_NFADataProps) => {
   const newTransitions: {
     [key: string]: {
       [key: string]: string[];
@@ -144,10 +145,10 @@ const generateNewTransitions = (
   return newTransitions;
 };
 
-const generateDFA = (input: E_NFAInputProps) => {
+const generateDFA = (input: E_NFAInputProps): E_NFA2DFADataProps => {
   const data = generateE_NFAData(input);
   const newFinalStates = generateFinalStatesWithClosure(data);
-  const newTransitions = generateNewTransitions(data, newFinalStates);
+  const newTransitions = generateNewTransitions(data);
 
   console.log({ data, newFinalStates, newTransitions });
 
@@ -156,11 +157,15 @@ const generateDFA = (input: E_NFAInputProps) => {
     finalStates: newFinalStates,
     transitions: newTransitions,
   };
-  console.log({ nfaData });
 
-  const dfa = nfaConverterRepository.generateDFAUsingData(nfaData);
-
-  return { ...dfa };
+  const dfaResult = nfaConverterRepository.generateDFAUsingData(nfaData);
+  console.log({ dfaResult });
+  return {
+    eNfaData: data,
+    dfaData: dfaResult.dfaData,
+    dfaTable: dfaResult.dfaTable,
+    dfaFinalStates: dfaResult.dfaFinalStates,
+  } as E_NFA2DFADataProps;
 };
 
 export const eNFAConverterRepository = {

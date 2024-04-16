@@ -19,64 +19,85 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { diagramRepository } from "@/lib/repositories/diagram";
 import { eNFAConverterRepository } from "@/lib/repositories/e-nfa-converter";
-import {
-  NFA2DFADataProps,
-  nfaConverterRepository,
-} from "@/lib/repositories/nfa-enfa-converter";
+import { nfaConverterRepository } from "@/lib/repositories/nfa-converter";
+import { E_NFA2DFADataProps, NFA2DFADataProps } from "@/lib/types/types";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import ComponentTableE_NFA from "./table-e-nfa";
+import ComponentTableNFA from "./table-nfa";
 
 const MermaidComponent = dynamic(() => import("@/components/mermaid"), {
   ssr: false,
 });
 
 export default function Page() {
-  const [alphabets, setAlphabets] = useState("0,1");
-  const [states, setStates] = useState("a,b,c,d,e,f");
-  const [startState, setStartState] = useState("a");
-  const [finalStates, setFinalStates] = useState("d");
+  // const [alphabets, setAlphabets] = useState("a,b");
+  // const [states, setStates] = useState("q0,q1,q2");
+  // const [startState, setStartState] = useState("q0");
+  // const [finalStates, setFinalStates] = useState("q2");
+  // const [faType, setFaType] = useState("nfa");
+  // const [transitions, setTransitions] = useState<{
+  //   [key: string]: string;
+  // }>({
+  //   q0: "q0,q1;q0",
+  //   q1: ";q2",
+  //   q2: ";",
+  // });
+  const [alphabets, setAlphabets] = useState("a,b,c");
+  const [states, setStates] = useState("q0,q1,q2");
+  const [startState, setStartState] = useState("q0");
+  const [finalStates, setFinalStates] = useState("q2");
   const [faType, setFaType] = useState("e-nfa");
-  // const [transitions, setTransitions] = useState("s1;s0,s1;\ns0;s1;");
   const [transitions, setTransitions] = useState<{
     [key: string]: string;
   }>({
-    a: "e;b",
-    b: ";c",
-    c: ";d",
-    d: ";",
-    e: "f;",
-    f: "d;",
+    q0: "q0;;",
+    q1: ";q1;",
+    q2: ";;q2",
   });
   const [epsilons, setEpsilons] = useState<{
     [key: string]: string;
   }>({
-    a: "",
-    b: "d",
-    c: "",
-    d: "",
-    e: "b,c",
-    f: "",
+    q0: "q1",
+    q1: "q2",
+    q2: "",
   });
+  // const [alphabets, setAlphabets] = useState("0,1");
+  // const [states, setStates] = useState("a,b,c,d,e,f");
+  // const [startState, setStartState] = useState("a");
+  // const [finalStates, setFinalStates] = useState("d");
+  // const [faType, setFaType] = useState("e-nfa");
+  // const [transitions, setTransitions] = useState<{
+  //   [key: string]: string;
+  // }>({
+  //   a: "e;b",
+  //   b: ";c",
+  //   c: ";d",
+  //   d: ";",
+  //   e: "f;",
+  //   f: "d;",
+  // });
+  // const [epsilons, setEpsilons] = useState<{
+  //   [key: string]: string;
+  // }>({
+  //   a: "",
+  //   b: "d",
+  //   c: "",
+  //   d: "",
+  //   e: "b,c",
+  //   f: "",
+  // });
 
   const [nfa2dfaData, setNfa2dfaData] = useState<
     NFA2DFADataProps | undefined
   >();
-
-  useEffect(() => {
-    console.log({ transitions });
-  }, [transitions]);
+  const [eNfa2dfaData, setENfa2dfaData] = useState<
+    E_NFA2DFADataProps | undefined
+  >();
 
   const [diagram, setDiagram] = useState({
     nfa: "",
@@ -94,13 +115,10 @@ export default function Page() {
         transitions: transitions,
       });
 
-      console.log(result);
-
       setNfa2dfaData(result);
-
       setDiagram({
         ...diagram,
-        nfa: diagramRepository.generateNFA(result.data),
+        nfa: diagramRepository.generateNFA(result.nfaData),
         dfa: diagramRepository.generateDFA(result.dfaData),
       });
     } else {
@@ -113,11 +131,10 @@ export default function Page() {
         epsilons,
       });
 
-      setNfa2dfaData(result);
+      setENfa2dfaData(result);
       setDiagram({
         ...diagram,
-        // nfa: diagramRepository.generateNFA(result.data),
-        // eNfa: "",
+        eNfa: diagramRepository.generateE_NFA(result.eNfaData),
         dfa: diagramRepository.generateDFA(result.dfaData),
       });
     }
@@ -221,15 +238,6 @@ export default function Page() {
             ))}
           </div>
 
-          {/* <div className="space-y-1">
-            <Label>Masukkan transitions</Label>
-            <Textarea
-              placeholder="0,1,..."
-              className="min-h-64 resize-none"
-              value={transitions}
-              onChange={(e) => setTransitions(e.target.value)}
-            />
-          </div> */}
           {faType === "e-nfa" && (
             <>
               <div>
@@ -261,113 +269,38 @@ export default function Page() {
           <Button onClick={onClickButtonGenerate}>Generate</Button>
         </div>
 
-        {nfa2dfaData && (
-          <>
-            <Separator className="mt-8" />
-            <p className="text-2xl font-semibold mt-8">Conversion Table</p>
-
-            <p className="mt-2">
-              Berikut tabel nondeterministic finite automata berdasarkan masukan
-              yang diberikan sebelum dilakukan konversi{" "}
-            </p>
-
-            <Table className="mt-4">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>States</TableHead>
-                  {nfa2dfaData.data.alphabets.map((item) => (
-                    <TableHead>{item}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Object.entries(nfa2dfaData.data.transitions).map((item) => {
-                  const state = item[0];
-
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        {nfa2dfaData.data.startState === state && (
-                          <ArrowRight className="inline w-4 h-4 mr-2" />
-                        )}
-                        {nfa2dfaData.data.finalStates.includes(state)
-                          ? "*"
-                          : ""}
-                        {state}
-                      </TableCell>
-                      {nfa2dfaData.data.alphabets.map((alphabet) => {
-                        const transition = item[1][alphabet];
-                        return (
-                          <TableCell>
-                            {transition ? transition.join(",") : "∅"}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-
-            <p className="mt-4">
-              Berikut tabel hasil konversi dari nondeterministic finite automata
-              menjadi deterministic finite automata
-            </p>
-            <Table className="mt-4">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>States</TableHead>
-                  {nfa2dfaData.data.alphabets.map((item) => (
-                    <TableHead>{item}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Object.entries(nfa2dfaData.dfaTable).map((item) => {
-                  const state = item[0];
-
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        {nfa2dfaData.data.startState === state && (
-                          <ArrowRight className="inline w-4 h-4 mr-2" />
-                        )}
-                        {nfa2dfaData.dfaFinalStates.includes(state) ? "*" : ""}
-                        {state}
-                      </TableCell>
-                      {nfa2dfaData.data.alphabets.map((alphabet) => {
-                        const transition = item[1][alphabet];
-                        return (
-                          <TableCell>
-                            {transition ? transition.join(",") : "∅"}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </>
+        {faType === "nfa" && nfa2dfaData && (
+          <ComponentTableNFA {...nfa2dfaData} />
+        )}
+        {faType === "e-nfa" && eNfa2dfaData && (
+          <ComponentTableE_NFA {...eNfa2dfaData} />
         )}
 
-        {nfa2dfaData && diagram && (
+        {(nfa2dfaData || eNfa2dfaData) && (
           <>
             <Separator className="mt-8" />
 
             <p className="font-semibold text-2xl mt-8">Diagram</p>
+            <p>
+              Berikut merupakan diagram {faType === "e-nfa" && "epsilon"}{" "}
+              nondeterministic finite automata dan deterministic finite automata
+              setelah dilakukan pengkonversian
+            </p>
 
-            <Tabs defaultValue="nfa" className="w-full mt-4">
+            <Tabs defaultValue="nfa-e-nfa" className="w-full mt-4">
               <TabsList className="w-full grid grid-cols-2">
-                <TabsTrigger value="nfa">
+                <TabsTrigger value="nfa-e-nfa">
                   {faType === "nfa" ? "NFA" : "Epsilon NFA"}
                 </TabsTrigger>
                 <TabsTrigger value="dfa">DFA</TabsTrigger>
               </TabsList>
-              <TabsContent value="nfa">
-                <MermaidComponent id="diagram-nfa" chart={diagram.nfa} />
+              <TabsContent value="nfa-e-nfa" className="mt-4">
+                <MermaidComponent
+                  id="diagram-nfa-e-nfa"
+                  chart={faType === "nfa" ? diagram.nfa : diagram.eNfa}
+                />
               </TabsContent>
-              <TabsContent value="dfa">
+              <TabsContent value="dfa" className="mt-4">
                 <MermaidComponent id="diagram-dfa" chart={diagram.dfa} />
               </TabsContent>
             </Tabs>

@@ -1,17 +1,14 @@
-import { DFADataProps, NFADataProps, NFAInputProps } from "../types/types";
+import {
+  DFADataProps,
+  NFA2DFADataProps,
+  NFADataProps,
+  NFAInputProps,
+} from "../types/types";
 
 type DFATableProps = {
   [key: string]: {
     [key: string]: string[];
   };
-};
-
-export type NFA2DFADataProps = {
-  data: NFADataProps;
-  table: DFATableProps;
-  dfaData: DFADataProps;
-  dfaTable: DFATableProps;
-  dfaFinalStates: string[];
 };
 
 const generateNFAData = (input: NFAInputProps): NFADataProps => {
@@ -230,8 +227,8 @@ const generateDFA = (input: NFAInputProps): NFA2DFADataProps => {
   );
 
   return {
-    data,
-    table,
+    nfaData: data,
+    dfaUnfilteredTable: table,
     dfaData,
     dfaTable: filteredTableData.table,
     dfaFinalStates: filteredTableData.finalStates,

@@ -59,3 +59,30 @@ export type E_NFADataProps = {
     [key: string]: string[];
   };
 };
+
+export type NFA2DFADataProps = {
+  nfaData: NFADataProps;
+  dfaUnfilteredTable: {
+    [key: string]: {
+      [key: string]: string[];
+    };
+  };
+  dfaData: DFADataProps;
+  dfaTable: {
+    [key: string]: {
+      [key: string]: string[];
+    };
+  };
+  dfaFinalStates: string[];
+};
+
+export type E_NFA2DFADataProps = {
+  eNfaData: E_NFADataProps;
+  dfaData: DFADataProps;
+  dfaTable: {
+    [key: string]: {
+      [key: string]: string[];
+    };
+  };
+  dfaFinalStates: string[];
+};
