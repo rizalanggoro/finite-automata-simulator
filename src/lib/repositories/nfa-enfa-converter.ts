@@ -142,19 +142,22 @@ const generateDFAFilteredTableData = (
   while (willVisit.length > 0) {
     const state = willVisit.splice(0, 1)[0];
     const destinations = table[state];
-    for (const destination of Object.values(destinations)) {
-      const nextVisit = destination.join();
-      if (
-        nextVisit != state &&
-        !fixDfa.includes(nextVisit) &&
-        !willVisit.includes(nextVisit)
-      ) {
-        console.log(nextVisit);
-        willVisit.push(nextVisit);
-      }
-    }
 
-    fixDfa.push(state);
+    if (destinations) {
+      for (const destination of Object.values(destinations)) {
+        const nextVisit = destination.join();
+        if (
+          nextVisit != state &&
+          !fixDfa.includes(nextVisit) &&
+          !willVisit.includes(nextVisit)
+        ) {
+          console.log(nextVisit);
+          willVisit.push(nextVisit);
+        }
+      }
+
+      fixDfa.push(state);
+    }
   }
 
   console.log({ fixDfa });
@@ -235,6 +238,25 @@ const generateDFA = (input: NFAInputProps): NFA2DFADataProps => {
   };
 };
 
+const generateDFAUsingData = (data: NFADataProps) => {
+  const table = generateDFATable(data);
+  const filteredTableData = generateDFAFilteredTableData(data, table);
+  const dfaData = generateDFAData(
+    data,
+    filteredTableData.table,
+    filteredTableData.finalStates
+  );
+
+  return {
+    data,
+    table,
+    dfaData,
+    dfaTable: filteredTableData.table,
+    dfaFinalStates: filteredTableData.finalStates,
+  };
+};
+
 export const nfaConverterRepository = {
   generateDFA,
+  generateDFAUsingData,
 };

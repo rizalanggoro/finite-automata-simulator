@@ -99,18 +99,26 @@ export default function Page() {
       setNfa2dfaData(result);
 
       setDiagram({
+        ...diagram,
         nfa: diagramRepository.generateNFA(result.data),
-        eNfa: "",
         dfa: diagramRepository.generateDFA(result.dfaData),
       });
     } else {
-      const result = eNFAConverterRepository.generateE_NFA({
+      const result = eNFAConverterRepository.generateDFA({
         alphabets: alphabets.toLowerCase(),
         states: states.toLowerCase(),
         startState: startState.toLowerCase(),
         finalStates: finalStates.toLowerCase(),
         transitions: transitions,
         epsilons,
+      });
+
+      setNfa2dfaData(result);
+      setDiagram({
+        ...diagram,
+        // nfa: diagramRepository.generateNFA(result.data),
+        // eNfa: "",
+        dfa: diagramRepository.generateDFA(result.dfaData),
       });
     }
   };
