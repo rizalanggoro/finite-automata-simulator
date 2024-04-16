@@ -229,8 +229,8 @@ export default function Page() {
                 <p>Pisahkan setiap state menggunakan tanda koma (,)</p>
               </div>
               <div className="gap-2 grid grid-cols-2">
-                {states.split(",").map((item) => (
-                  <div className="space-y-1">
+                {states.split(",").map((item, index) => (
+                  <div className="space-y-1" key={"input-epsilon-" + index}>
                     <Label>Masukkan epsilon ({item})</Label>
                     <Input
                       placeholder="0,1,..."

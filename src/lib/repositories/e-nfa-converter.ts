@@ -1,10 +1,10 @@
 import { E_NFADataProps, E_NFAInputProps } from "../types/types";
 
 const generateE_NFAData = (input: E_NFAInputProps): E_NFADataProps => {
-  const states = input.states.split(",");
-  const alphabets = input.alphabets.split(",");
-  const startState = input.startState;
-  const finalStates = input.finalStates.split(",");
+  const states = input.states.toLowerCase().split(",");
+  const alphabets = input.alphabets.toLowerCase().split(",");
+  const startState = input.startState.toLowerCase();
+  const finalStates = input.finalStates.toLowerCase().split(",");
   const transitions: {
     [key: string]: {
       [key: string]: string[];
@@ -18,26 +18,31 @@ const generateE_NFAData = (input: E_NFAInputProps): E_NFADataProps => {
     const key = transition[0].toLowerCase();
     const value = transition[1].toLowerCase();
 
-    const innerTransitions: { [key: string]: string[] } = {};
+    if (states.includes(key)) {
+      const innerTransitions: { [key: string]: string[] } = {};
 
-    const statesByAlphabet = value.split(";");
-    for (let a = 0; a < alphabets.length; a++) {
-      const alphabet = alphabets[a];
-      if (statesByAlphabet[a].length > 0)
-        innerTransitions[alphabet] = statesByAlphabet[a].split(",");
+      const statesByAlphabet = value.split(";");
+      for (let a = 0; a < alphabets.length; a++) {
+        const alphabet = alphabets[a];
+        if (statesByAlphabet[a].length > 0)
+          innerTransitions[alphabet] = statesByAlphabet[a].split(",");
+      }
+
+      transitions[key] = innerTransitions;
     }
-
-    transitions[key] = innerTransitions;
   }
 
   // epsilon transitions
   for (const epsilonTransition of Object.entries(input.epsilons)) {
     const key = epsilonTransition[0].toLowerCase();
     const value = epsilonTransition[1].toLowerCase();
-    console.log({ key, value });
 
-    if (value.length > 0) {
-      epsilonTransitions[key] = value.split(",");
+    if (states.includes(key)) {
+      console.log({ key, value });
+
+      if (value.length > 0) {
+        epsilonTransitions[key] = value.split(",");
+      }
     }
   }
 
