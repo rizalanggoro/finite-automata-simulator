@@ -1,0 +1,32 @@
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
+<Breadcrumb className="not-prose">
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/">Home</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/docs">Dokumentasi</BreadcrumbLink>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+
+## Finite Automata Simulator
+
+Program atau website Finite Automata Simulator ini kami buat untuk memenuhi tugas project mata kuliah Teori Bahasa dan Automata. Adapun beberapa tools yang dapat digunakan adalah sebagai berikut:
+
+1. NFA, E-NFA Converter <br />
+   Simulator untuk mengubah nondeterministic finite automata dan epsilon nondeterministic
+   finite automata menjad sebuah deterministic finite automata. [Lihat cara penggunaan](/docs/nfa-enfa-converter)
+2. Regex Converter
+3. DFA Minimization<br />
+   Simulator untuk mengubah deterministic finite automata menjadi minimal. Selanjutnya, pengguna dapat mengetes kedua DFA tersebut dengan masukan string. [Lihat cara penggunaan](/docs/dfa-minimization)
+4. DFA Equivalence
+5. DFA, NFA, E-NFA, dan Regex Validator

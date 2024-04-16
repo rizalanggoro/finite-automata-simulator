@@ -7,7 +7,7 @@ type MenuItem = {
   href: string;
 };
 const menus: Array<MenuItem> = [
-  // { title: "Dokumentasi", href: "/docs" },
+  { title: "Dokumentasi", href: "/docs" },
   { title: "Tentang", href: "/about" },
 ];
 
