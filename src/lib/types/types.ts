@@ -1,3 +1,13 @@
+export type DFAInputProps = {
+  states: string;
+  startState: string;
+  finalStates: string;
+  alphabets: string;
+  transitions: {
+    [key: string]: string;
+  };
+};
+
 export type DFADataProps = {
   states: string[];
   startState: string;

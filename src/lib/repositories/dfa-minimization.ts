@@ -1,28 +1,8 @@
-import { DFADataProps } from "../types/types";
-
-type DFAInputProps = {
-  states: string;
-  startState: string;
-  finalStates: string;
-  alphabets: string;
-  transitions: string;
-};
-
-// type DFADataProps = {
-//   states: Array<string>;
-//   startState: string;
-//   finalStates: Array<string>;
-//   alphabets: Array<string>;
-//   transitions: {
-//     [key: string]: {
-//       [key: string]: string;
-//     };
-//   };
-// };
+import { DFADataProps, DFAInputProps } from "../types/types";
 
 export type DFAMinimizationDataProps = {
-  input: DFAInputProps;
-  data: DFADataProps;
+  initialData: DFADataProps;
+  minifiedData: DFADataProps;
   table: {
     [key: string]: Array<Array<string>>;
   };
@@ -37,30 +17,33 @@ export type DFACheckDataProps = {
   }>;
 };
 
-const generateDFAData = (props: DFAInputProps): DFADataProps => {
-  const states = props.states.split(",");
-  const alphabets = props.alphabets.split(",");
-  const startState = props.startState;
-  const finalStates = props.finalStates.split(",");
+const generateDFAData = (input: DFAInputProps): DFADataProps => {
+  const states = input.states.toLowerCase().split(",");
+  const alphabets = input.alphabets.toLowerCase().split(",");
+  const startState = input.startState.toLowerCase();
+  const finalStates = input.finalStates.toLowerCase().split(",");
   const transitions: {
     [key: string]: {
       [key: string]: string;
     };
   } = {};
 
-  const _transitions = props.transitions.split("\n").map((item) => {
-    const destinations = item.split(",");
-    const map: {
+  for (const transition of Object.entries(input.transitions)) {
+    const key = transition[0];
+    const value = transition[1];
+
+    const innerTransitions: {
       [key: string]: string;
     } = {};
-    for (let a = 0; a < destinations.length; a++)
-      map[alphabets[a]] = destinations[a];
 
-    return map;
-  });
+    const nextStates = value.toLowerCase().split(";");
+    for (let a = 0; a < alphabets.length; a++) {
+      const alphabet = alphabets[a];
+      innerTransitions[alphabet] = nextStates[a];
+    }
 
-  for (let a = 0; a < _transitions.length; a++)
-    transitions[states[a]] = _transitions[a];
+    transitions[key] = innerTransitions;
+  }
 
   return {
     states,
@@ -92,38 +75,6 @@ const findStateIndexInPairStates = (state: string, pairStates: string[][]) => {
     }
   }
   return index;
-};
-
-// done
-const generateDiagramCode = (input: DFAInputProps) => {
-  const data: DFADataProps = generateDFAData(input);
-
-  let code = "flowchart LR\n";
-
-  // create start state
-  code += "\nstart[start]";
-
-  // create states
-  for (const state of data.states) {
-    if (data.finalStates.includes(state))
-      code += "\n" + state + "(((" + state + ")))";
-    else code += "\n" + state + "((" + state + "))";
-  }
-  code += "\n";
-
-  // connect start state
-  code += "\nstart --> " + data.startState;
-
-  // create transitions
-  for (const transition of Object.entries(data.transitions)) {
-    for (const alphabet of data.alphabets) {
-      const state = transition[0];
-      const destination = transition[1][alphabet];
-      code += "\n" + state + " -- " + alphabet + " --> " + destination;
-    }
-  }
-
-  return code;
 };
 
 const generateMinimization = (
@@ -272,15 +223,22 @@ const generateMinimization = (
   }
 
   // generate result transitions
-  const resultTransitions: string[] = [];
+  const resultTransitions: {
+    [key: string]: {
+      [key: string]: string;
+    };
+  } = {};
   for (const state of resultStates) {
+    const innerResultTransitions: {
+      [key: string]: string;
+    } = {};
+
     const transition = transitions[state];
-    const destinations: string[] = [];
     for (const alphabet of data.alphabets) {
       const destination = transition[alphabet];
-      destinations.push(destination);
+      innerResultTransitions[alphabet] = destination;
     }
-    resultTransitions.push(destinations.join());
+    resultTransitions[state] = innerResultTransitions;
   }
 
   // search start state
@@ -293,26 +251,36 @@ const generateMinimization = (
     resultStartState = lastPairStates[index][0];
   }
 
-  const inputResult: DFAInputProps = {
-    alphabets: data.alphabets.join(),
-    states: resultStates.join(),
+  // const inputResult: DFAInputProps = {
+  //   alphabets: data.alphabets.join(),
+  //   states: resultStates.join(),
+  //   startState: resultStartState,
+  //   finalStates: resultFinalStates.join(),
+  //   transitions: resultTransitions,
+  // };
+
+  const minifiedData: DFADataProps = {
+    alphabets: data.alphabets,
+    states: resultStates,
     startState: resultStartState,
-    finalStates: resultFinalStates.join(),
-    transitions: resultTransitions.join("\n"),
+    finalStates: resultFinalStates,
+    transitions: resultTransitions,
   };
 
   return {
-    input: inputResult,
-    data: generateDFAData(inputResult),
+    // input: inputResult,
+    // data: generateDFAData(inputResult),
     table,
+    initialData: data,
+    minifiedData,
   };
 };
 
 const checkInputString = (
-  input: DFAInputProps,
+  data: DFADataProps,
   inputString: string
 ): DFACheckDataProps => {
-  const data = generateDFAData(input);
+  // const data = generateDFAData(input);
   const startState = data.startState;
 
   const history: Array<{
@@ -346,7 +314,6 @@ const checkInputString = (
 
 export const dfaMinimizationRepository = {
   generateDFAData,
-  generateDiagramCode,
   generateMinimization,
   checkInputString,
 };

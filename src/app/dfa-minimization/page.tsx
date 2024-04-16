@@ -22,12 +22,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import {
   DFACheckDataProps,
   DFAMinimizationDataProps,
   dfaMinimizationRepository,
 } from "@/lib/repositories/dfa-minimization";
+import { diagramRepository } from "@/lib/repositories/diagram";
+import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
@@ -41,10 +42,22 @@ export default function Page() {
   const [alphabets, setAlphabets] = useState("0,1");
   const [states, setStates] = useState("A,B,C,D,E,F,G,H");
   const [startState, setStartState] = useState("A");
-  const [acceptingStates, setAcceptingStates] = useState("E");
+  const [finalStates, setFinalStates] = useState("E");
   const [relations, setRelations] = useState(
     "C,D\nH,D\nF,E\nE,F\nA,E\nF,B\nE,F\nF,E"
   );
+  const [transitions, setTransitions] = useState<{
+    [key: string]: string;
+  }>({
+    a: "c;d",
+    b: "h;d",
+    c: "f;e",
+    d: "e;f",
+    e: "a;e",
+    f: "f;b",
+    g: "e;f",
+    h: "f;e",
+  });
   const [checkInputString, setCheckInputString] = useState("1011");
 
   const [diagram, setDiagram] = useState({
@@ -63,27 +76,18 @@ export default function Page() {
   >();
 
   const onClickButtonGenerate = () => {
-    const minimizationData = dfaMinimizationRepository.generateMinimization({
-      alphabets: alphabets.toLowerCase(),
-      states: states.toLowerCase(),
-      startState: startState.toLowerCase(),
-      finalStates: acceptingStates.toLowerCase(),
-      transitions: relations.toLowerCase(),
+    const result = dfaMinimizationRepository.generateMinimization({
+      alphabets,
+      states,
+      startState,
+      finalStates,
+      transitions,
     });
 
-    setDfaMinimizationData(minimizationData);
-
+    setDfaMinimizationData(result);
     setDiagram({
-      initial: dfaMinimizationRepository.generateDiagramCode({
-        alphabets: alphabets.toLowerCase(),
-        states: states.toLowerCase(),
-        startState: startState.toLowerCase(),
-        finalStates: acceptingStates.toLowerCase(),
-        transitions: relations.toLowerCase(),
-      }),
-      minified: dfaMinimizationRepository.generateDiagramCode({
-        ...minimizationData.input,
-      }),
+      initial: diagramRepository.generateDFA(result.initialData),
+      minified: diagramRepository.generateDFA(result.minifiedData),
     });
   };
 
@@ -91,20 +95,13 @@ export default function Page() {
     if (dfaMinimizationData) {
       setDfaCheckInitialData(
         dfaMinimizationRepository.checkInputString(
-          {
-            alphabets: alphabets.toLowerCase(),
-            states: states.toLowerCase(),
-            startState: startState.toLowerCase(),
-            finalStates: acceptingStates.toLowerCase(),
-            transitions: relations.toLowerCase(),
-          },
+          dfaMinimizationData.initialData,
           checkInputString
         )
       );
-
       setDfaCheckMinifiedData(
         dfaMinimizationRepository.checkInputString(
-          dfaMinimizationData.input,
+          dfaMinimizationData.minifiedData,
           checkInputString
         )
       );
@@ -166,25 +163,58 @@ export default function Page() {
           </div>
 
           <div className="space-y-1">
-            <Label>Masukkan accepting state</Label>
+            <Label>Masukkan final state</Label>
             <Input
               placeholder="A,B,..."
-              value={acceptingStates}
-              onChange={(e) => setAcceptingStates(e.target.value)}
+              value={finalStates}
+              onChange={(e) => setFinalStates(e.target.value)}
               className="lowercase"
             />
           </div>
 
-          <div className="space-y-1">
-            <Label>Masukkan relasi atau hubungan</Label>
-            <Textarea
-              placeholder={placeholderRelations}
-              value={relations}
-              onChange={(e) => setRelations(e.target.value)}
-              className="lowercase resize-none min-h-64"
-            />
+          <div>
+            <p className="font-semibold text-lg pt-4">Transitions</p>
+            <p>Pisahkan setiap hubungan dengan tanda titik koma (;)</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {states
+              .toLowerCase()
+              .split(",")
+              .map((state, index) => (
+                <div
+                  className="space-y-1"
+                  key={"transition-input-" + state + index}
+                >
+                  <Label>
+                    Masukkan transition ({state}{" "}
+                    <ArrowRight className="w-3 h-3 inline" />{" "}
+                    {alphabets.replaceAll(",", ";")})
+                  </Label>
+                  <Input
+                    value={transitions[state]}
+                    onChange={(e) =>
+                      setTransitions({
+                        ...transitions,
+                        [state]: e.target.value,
+                      })
+                    }
+                    className="lowercase"
+                  />
+                </div>
+              ))}
           </div>
         </div>
+
+        {/* old */}
+        {/* <div className="space-y-1">
+          <Label>Masukkan transitions</Label>
+          <Textarea
+            placeholder={placeholderRelations}
+            value={relations}
+            onChange={(e) => setRelations(e.target.value)}
+            className="lowercase resize-none min-h-64"
+          />
+        </div> */}
 
         <div className="mt-4 flex justify-end">
           <Button onClick={onClickButtonGenerate}>Generate</Button>
@@ -205,7 +235,7 @@ export default function Page() {
               <TableBody>
                 {Object.entries(dfaMinimizationData.table).map(
                   (item, index) => (
-                    <TableRow>
+                    <TableRow key={"table-row-" + item + index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>Eq-{item[0]}</TableCell>
                       <TableCell>
@@ -221,13 +251,13 @@ export default function Page() {
                 <TableRow>
                   <TableCell colSpan={2}>States</TableCell>
                   <TableCell>
-                    {dfaMinimizationData.data.states.join(",")}
+                    {dfaMinimizationData.minifiedData.states.join(",")}
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell colSpan={2}>Final states</TableCell>
                   <TableCell>
-                    {dfaMinimizationData.data.finalStates.join(",")}
+                    {dfaMinimizationData.minifiedData.finalStates.join(",")}
                   </TableCell>
                 </TableRow>
               </TableFooter>
@@ -280,8 +310,8 @@ export default function Page() {
                   <TableBody>
                     {Array.from(
                       Array(dfaCheckInitialData.history.length).keys()
-                    ).map((item) => (
-                      <TableRow>
+                    ).map((item, index) => (
+                      <TableRow key={"table-row-check-initial-" + item + index}>
                         <TableCell colSpan={1}>
                           {dfaCheckInitialData.history[item].str}
                         </TableCell>

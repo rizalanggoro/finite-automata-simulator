@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 type MenuItem = {
@@ -80,7 +81,7 @@ function GridItemCard({ menu }: GridItemCardProps) {
   return (
     <>
       <Link href={menu.href}>
-        <Card>
+        <Card className={cn(menu.href === "/" && "opacity-30")}>
           <CardHeader>
             <CardTitle className="text-lg">{menu.title}</CardTitle>
             <CardDescription>{menu.description}</CardDescription>
