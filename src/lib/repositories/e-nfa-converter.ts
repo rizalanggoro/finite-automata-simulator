@@ -72,13 +72,29 @@ const generateE_NFAData = (input: E_NFAInputProps): E_NFADataProps => {
 
 const generateFinalStatesWithClosure = (data: E_NFADataProps): string[] => {
   const newFinalStates: string[] = [...data.finalStates];
+  const tableClosures: {
+    [key: string]: string[];
+  } = {};
+
+  // initialize empty table closure
   for (const transition of Object.entries(data.transitions)) {
     const currentState = transition[0];
     const epsilonStates = data.epsilonTransitions[currentState];
 
-    console.log({ currentState, epsilonStates });
+    if (epsilonStates && epsilonStates.length > 0) {
+      tableClosures[currentState] = [];
+    }
+  }
+
+  for (const transition of Object.entries(data.transitions)) {
+    const currentState = transition[0];
+    const epsilonStates = data.epsilonTransitions[currentState];
+
+    // console.log({ currentState, epsilonStates });
 
     if (epsilonStates && epsilonStates.length > 0) {
+      console.log("closure", { currentState, epsilonStates });
+
       const closures: string[] = [];
 
       let currentEpsilonStates = [currentState, ...epsilonStates];
@@ -96,8 +112,14 @@ const generateFinalStatesWithClosure = (data: E_NFADataProps): string[] => {
       if (closures.includes(currentState)) {
         newFinalStates.push(currentState);
       }
+
+      console.log("closure", { currentState, closures });
+      tableClosures[currentState].push(...closures);
+      tableClosures[currentState].sort();
     }
   }
+
+  console.log("closure", { closureTables: tableClosures });
 
   return newFinalStates;
 };
