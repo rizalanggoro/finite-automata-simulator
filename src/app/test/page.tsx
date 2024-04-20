@@ -30,7 +30,7 @@ export default function Page() {
       0: ";1,2",
       1: "2;3",
       2: "1,3;",
-      3: ";",
+      3: "",
     },
   };
   const nfaData = dataConverterRepository.convertNFAInput(nfaInput);
@@ -44,7 +44,7 @@ export default function Page() {
       0: ";1,2",
       1: "2;3",
       2: "1,3;",
-      3: ";",
+      3: "",
     },
     epsilons: {
       0: "",

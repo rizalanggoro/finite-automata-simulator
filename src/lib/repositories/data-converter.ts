@@ -1,7 +1,7 @@
 import {
   DFADataProps,
   DFAInputProps,
-  E_NFADataProps,
+  E_NFADataProps as ENFADataProps,
   E_NFAInputProps,
   NFADataProps,
   NFAInputProps,
@@ -68,7 +68,7 @@ const convertNFAInput = (input: NFAInputProps): NFADataProps => {
     const pairDestinations = strPairDestinations.split(";");
     for (let a = 0; a < alphabets.length; a++) {
       const strDestinations = pairDestinations[a];
-      if (strDestinations.length > 0) {
+      if (strDestinations && strDestinations.length > 0) {
         transitions[state][alphabets[a]] = strDestinations.split(",");
       }
     }
@@ -82,7 +82,7 @@ const convertNFAInput = (input: NFAInputProps): NFADataProps => {
     transitions,
   };
 };
-const convertENFAInput = (input: E_NFAInputProps): E_NFADataProps => {
+const convertENFAInput = (input: E_NFAInputProps): ENFADataProps => {
   const { alphabets, states, startState, finalStates, transitions } =
     convertNFAInput({ ...input });
 
