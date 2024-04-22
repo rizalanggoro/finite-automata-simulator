@@ -4,6 +4,7 @@ import ContainerComponent from "@/components/container";
 import JsonViewComponent from "@/components/json-view";
 import { dataConverterRepository } from "@/lib/repositories/data-converter";
 import { enfaConverterRepository } from "@/lib/repositories/enfa-converter";
+import { nfaConverterRepository } from "@/lib/repositories/nfa-converter";
 import {
   DFAInputProps,
   ENFAInputProps,
@@ -88,10 +89,35 @@ export default function Page() {
   const enfaNfaData2 =
     enfaConverterRepository.convertENFAInputToNFA(enfaInput2);
 
+  const enfaInput3: ENFAInputProps = {
+    alphabets: "0,1",
+    states: "q0',q0,q1,q2",
+    startState: "q0'",
+    finalStates: "q0',q2",
+    transitions: {
+      "q0'": "",
+      q0: "q0,q1;q0",
+      q1: ";q2",
+      q2: "",
+    },
+    epsilons: {
+      "q0'": "q0",
+      q0: "",
+      q1: "",
+      q2: "",
+    },
+  };
+  const enfaData3 = dataConverterRepository.convertENFAInput(enfaInput3);
+  const enfaNfaData3 =
+    enfaConverterRepository.convertENFAInputToNFA(enfaInput3);
+  const dfaData3 = nfaConverterRepository.generateDFAUsingData(
+    enfaNfaData3.nfaData
+  );
+
   return (
     <>
       <ContainerComponent safeTop className="py-8">
-        <section className="space-y-2">
+        {/* <section className="space-y-2">
           <p className="font-semibold text-lg">DFA Data Converter</p>
 
           <JsonViewComponent data={dfaInput} />
@@ -119,6 +145,15 @@ export default function Page() {
           <JsonViewComponent data={enfaInput2} />
           <JsonViewComponent data={enfaData2} />
           <JsonViewComponent data={enfaNfaData2} />
+        </section> */}
+
+        <section className="mt-4 space-y-2 border-t">
+          <p className="font-semibold mt-4">ENFA Data Converter 3</p>
+
+          <JsonViewComponent title="ENFA Input" data={enfaInput3} />
+          <JsonViewComponent title="ENFA Data" data={enfaData3} />
+          <JsonViewComponent title="ENFA -> NFA Data" data={enfaNfaData3} />
+          <JsonViewComponent title="NFA -> DFA Data" data={dfaData3} />
         </section>
       </ContainerComponent>
     </>

@@ -1,4 +1,8 @@
-import { ENFADataProps, ENFAInputProps } from "../types/types";
+import {
+  ENFA2NFADataProps,
+  ENFADataProps,
+  ENFAInputProps,
+} from "../types/types";
 import { dataConverterRepository } from "./data-converter";
 
 const generateClosures = (data: ENFADataProps) => {
@@ -63,12 +67,47 @@ const generateNewTransitions = (data: ENFADataProps) => {
   return transitions;
 };
 
-const convertENFAInputToNFA = (input: ENFAInputProps) => {
+const generateNewFinalStates = (
+  data: ENFADataProps,
+  closures: {
+    [key: string]: string[];
+  }
+) => {
+  const finalStates: string[] = [];
+  for (const closure of Object.entries(closures)) {
+    const key = closure[0];
+    const value = closure[1];
+
+    for (const item of value) {
+      if (data.finalStates.includes(item)) {
+        finalStates.push(key);
+        break;
+      }
+    }
+  }
+
+  finalStates.sort();
+
+  return finalStates;
+};
+
+const convertENFAInputToNFA = (input: ENFAInputProps): ENFA2NFADataProps => {
   const data = dataConverterRepository.convertENFAInput(input);
   const closures = generateClosures(data);
   const newTransitions = generateNewTransitions(data);
+  const newFinalStates = generateNewFinalStates(data, closures);
 
-  return { closures, newTransitions };
+  return {
+    enfaData: data,
+    enfaClosures: closures,
+    nfaData: {
+      alphabets: data.alphabets,
+      states: data.states,
+      startState: data.startState,
+      finalStates: newFinalStates,
+      transitions: newTransitions,
+    },
+  };
 };
 
 export const enfaConverterRepository = {

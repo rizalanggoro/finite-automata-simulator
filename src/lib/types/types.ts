@@ -1,3 +1,4 @@
+// dfa
 export type DFAInputProps = {
   states: string;
   startState: string;
@@ -20,6 +21,7 @@ export type DFADataProps = {
   };
 };
 
+// nfa
 export type NFAInputProps = {
   alphabets: string;
   states: string;
@@ -42,6 +44,7 @@ export type NFADataProps = {
   };
 };
 
+// enfa
 export type ENFAInputProps = {
   alphabets: string;
   states: string;
@@ -70,6 +73,13 @@ export type ENFADataProps = {
   };
 };
 
+// converter output types
+export type ENFA2NFADataProps = {
+  enfaData: ENFADataProps;
+  enfaClosures: { [key: string]: string[] };
+  nfaData: NFADataProps;
+};
+
 export type NFA2DFADataProps = {
   nfaData: NFADataProps;
   dfaUnfilteredTable: {
@@ -86,6 +96,7 @@ export type NFA2DFADataProps = {
   dfaFinalStates: string[];
 };
 
+// deprecated
 export type E_NFA2DFADataProps = {
   eNfaData: ENFADataProps;
   dfaData: DFADataProps;
