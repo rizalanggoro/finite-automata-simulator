@@ -20,7 +20,7 @@ export default function JsonViewComponent(props: Props) {
           style={githubLightTheme}
           enableClipboard={false}
           displayDataTypes={false}
-          collapsed
+          collapsed={false}
         />
       </>
     );
