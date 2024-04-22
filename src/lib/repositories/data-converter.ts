@@ -1,8 +1,8 @@
 import {
   DFADataProps,
   DFAInputProps,
-  E_NFADataProps as ENFADataProps,
-  E_NFAInputProps,
+  ENFADataProps,
+  ENFAInputProps,
   NFADataProps,
   NFAInputProps,
 } from "../types/types";
@@ -82,7 +82,7 @@ const convertNFAInput = (input: NFAInputProps): NFADataProps => {
     transitions,
   };
 };
-const convertENFAInput = (input: E_NFAInputProps): ENFADataProps => {
+const convertENFAInput = (input: ENFAInputProps): ENFADataProps => {
   const { alphabets, states, startState, finalStates, transitions } =
     convertNFAInput({ ...input });
 
@@ -98,7 +98,7 @@ const convertENFAInput = (input: E_NFAInputProps): ENFADataProps => {
   // men-generate epsilon transitions berdasarkan masukan dari user
   for (const state of states) {
     const strEpsilonDestinations = input.epsilons[state];
-    epsilonTransitions[state] = [state];
+    epsilonTransitions[state] = [];
 
     if (strEpsilonDestinations.length > 0) {
       epsilonTransitions[state].push(...strEpsilonDestinations.split(","));

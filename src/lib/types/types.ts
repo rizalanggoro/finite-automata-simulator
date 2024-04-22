@@ -42,7 +42,7 @@ export type NFADataProps = {
   };
 };
 
-export type E_NFAInputProps = {
+export type ENFAInputProps = {
   alphabets: string;
   states: string;
   startState: string;
@@ -55,7 +55,7 @@ export type E_NFAInputProps = {
   };
 };
 
-export type E_NFADataProps = {
+export type ENFADataProps = {
   states: string[];
   startState: string;
   finalStates: string[];
@@ -87,7 +87,7 @@ export type NFA2DFADataProps = {
 };
 
 export type E_NFA2DFADataProps = {
-  eNfaData: E_NFADataProps;
+  eNfaData: ENFADataProps;
   dfaData: DFADataProps;
   dfaTable: {
     [key: string]: {
