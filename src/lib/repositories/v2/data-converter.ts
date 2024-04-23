@@ -5,7 +5,7 @@ import {
   ENFAInputProps,
   NFADataProps,
   NFAInputProps,
-} from "../types/types";
+} from "../../types/types";
 
 const convertDFAInput = (input: DFAInputProps): DFADataProps => {
   const alphabets = input.alphabets.toLowerCase().split(",");
@@ -43,6 +43,7 @@ const convertDFAInput = (input: DFAInputProps): DFADataProps => {
     transitions,
   };
 };
+
 const convertNFAInput = (input: NFAInputProps): NFADataProps => {
   const alphabets = input.alphabets.split(",");
   const states = input.states.split(",");
@@ -82,6 +83,7 @@ const convertNFAInput = (input: NFAInputProps): NFADataProps => {
     transitions,
   };
 };
+
 const convertENFAInput = (input: ENFAInputProps): ENFADataProps => {
   const { alphabets, states, startState, finalStates, transitions } =
     convertNFAInput({ ...input });

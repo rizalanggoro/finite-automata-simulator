@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { diagramRepository } from "@/lib/repositories/diagram";
 import { eNFAConverterRepository } from "@/lib/repositories/e-nfa-converter";
 import { nfaConverterRepository } from "@/lib/repositories/nfa-converter";
+import { diagramRepository } from "@/lib/repositories/v2/diagram";
 import { E_NFA2DFADataProps, NFA2DFADataProps } from "@/lib/types/types";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";

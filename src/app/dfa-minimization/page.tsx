@@ -27,7 +27,7 @@ import {
   DFAMinimizationDataProps,
   dfaMinimizationRepository,
 } from "@/lib/repositories/dfa-minimization";
-import { diagramRepository } from "@/lib/repositories/diagram";
+import { diagramRepository } from "@/lib/repositories/v2/diagram";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";

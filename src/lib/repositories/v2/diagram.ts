@@ -1,4 +1,4 @@
-import { DFADataProps, ENFADataProps, NFADataProps } from "../types/types";
+import { DFADataProps, ENFADataProps, NFADataProps } from "../../types/types";
 
 const generateDFA = (data: DFADataProps): string => {
   let code = "flowchart LR\n";

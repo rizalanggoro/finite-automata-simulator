@@ -1,4 +1,4 @@
-import { NFADataProps, NFAInputProps } from "../types/types";
+import { DFADataProps, NFADataProps, NFAInputProps } from "../../types/types";
 import { dataConverterRepository } from "./data-converter";
 
 const generateAllStatesCombinations = (set: string[]) => {
@@ -106,15 +106,53 @@ const generateDFANewFinalStates = (
   return result;
 };
 
+const generateDFANewTransitions = (
+  data: NFADataProps,
+  table: {
+    [key: string]: {
+      [key: string]: string[];
+    };
+  }
+) => {
+  const transitions: {
+    [key: string]: {
+      [key: string]: string;
+    };
+  } = {};
+
+  for (const entry of Object.entries(table)) {
+    const key = entry[0];
+    const value = entry[1];
+
+    transitions[key] = {};
+
+    for (const alphabet of data.alphabets) {
+      transitions[key][alphabet] = value[alphabet].sort().join();
+    }
+  }
+
+  return transitions;
+};
+
 const convertNFAToDFA = (data: NFADataProps) => {
   const table = generateDFATable(data);
   const reachableTable = generateReachableDFATable(data, table);
   const newFinalStates = generateDFANewFinalStates(data, reachableTable);
+  const newTransitions = generateDFANewTransitions(data, reachableTable);
 
   return {
-    dfaTable: table,
-    reachableDfaTable: reachableTable,
-    newFinalStates,
+    others: {
+      dfaTable: table,
+      reachableDfaTable: reachableTable,
+      newFinalStates,
+    },
+    dfaData: {
+      alphabets: data.alphabets,
+      states: Object.keys(reachableTable),
+      startState: data.startState,
+      finalStates: newFinalStates,
+      transitions: newTransitions,
+    } as DFADataProps,
   };
 };
 
@@ -122,7 +160,7 @@ const convertNFAInputToDFA = (input: NFAInputProps) => {
   return convertNFAToDFA(dataConverterRepository.convertNFAInput(input));
 };
 
-export const nfaConverterRepository2 = {
+export const nfaConverterRepository = {
   convertNFAInputToDFA,
   convertNFAToDFA,
 };

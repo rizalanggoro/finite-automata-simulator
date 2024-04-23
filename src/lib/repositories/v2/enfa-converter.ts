@@ -2,7 +2,7 @@ import {
   ENFA2NFADataProps,
   ENFADataProps,
   ENFAInputProps,
-} from "../types/types";
+} from "../../types/types";
 import { dataConverterRepository } from "./data-converter";
 
 const generateClosures = (data: ENFADataProps) => {
@@ -98,8 +98,10 @@ const convertENFAInputToNFA = (input: ENFAInputProps): ENFA2NFADataProps => {
   const newFinalStates = generateNewFinalStates(data, closures);
 
   return {
-    enfaData: data,
-    enfaClosures: closures,
+    others: {
+      enfaData: data,
+      enfaClosures: closures,
+    },
     nfaData: {
       alphabets: data.alphabets,
       states: data.states,

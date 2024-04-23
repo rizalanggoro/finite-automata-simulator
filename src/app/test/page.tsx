@@ -2,9 +2,9 @@
 
 import ContainerComponent from "@/components/container";
 import JsonViewComponent from "@/components/json-view";
-import { dataConverterRepository } from "@/lib/repositories/data-converter";
-import { nfaConverterRepository2 } from "@/lib/repositories/nfa-converter-2";
-import { NFAInputProps } from "@/lib/types/types";
+import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
+import { dfaMinimizationRepository } from "@/lib/repositories/v2/dfa-minimization";
+import { DFAInputProps } from "@/lib/types/types";
 
 export default function Page() {
   // const dfaInput: DFAInputProps = {
@@ -109,26 +109,50 @@ export default function Page() {
   //   enfaNfaData3.nfaData
   // );
 
-  const nfaInput: NFAInputProps = {
+  // const nfaInput: NFAInputProps = {
+  //   alphabets: "0,1",
+  //   states: "q0,q1,q2",
+  //   startState: "q0",
+  //   finalStates: "q2",
+  //   transitions: {
+  //     q0: "q0,q1;q0",
+  //     q1: ";q2",
+  //     q2: "",
+  //   },
+  // };
+  // const nfaData = dataConverterRepository.convertNFAInput(nfaInput);
+  // const nfa2DfaData = nfaConverterRepository.convertNFAToDFA(nfaData);
+
+  const dfaInput: DFAInputProps = {
     alphabets: "0,1",
-    states: "q0,q1,q2",
-    startState: "q0",
-    finalStates: "q2",
+    states: "a,b,c,d,e,f,g,h",
+    startState: "a",
+    finalStates: "e", // coba cek manual ketika ditambah b,e
     transitions: {
-      q0: "q0,q1;q0",
-      q1: ";q2",
-      q2: "",
+      a: "c,d",
+      b: "h,d",
+      c: "f,e",
+      d: "e,f",
+      e: "a,e",
+      f: "f,b",
+      g: "e,f",
+      h: "f,e",
     },
   };
-  const nfaData = dataConverterRepository.convertNFAInput(nfaInput);
-  const nfa2DfaData = nfaConverterRepository2.convertNFAToDFA(nfaData);
+  const dfaData = dataConverterRepository.convertDFAInput(dfaInput);
+  const minifiedDfaData =
+    dfaMinimizationRepository.convertDFAToMinifiedDFA(dfaData);
 
   return (
     <>
       <ContainerComponent safeTop className="py-8">
-        <JsonViewComponent data={nfaInput} title="NFA Input" />
+        <JsonViewComponent data={dfaInput} title="DFA Input" />
+        <JsonViewComponent data={dfaData} title="DFA Data" />
+        <JsonViewComponent data={minifiedDfaData} title="Minified DFA Data" />
+
+        {/* <JsonViewComponent data={nfaInput} title="NFA Input" />
         <JsonViewComponent data={nfaData} title="NFA Data" />
-        <JsonViewComponent data={nfa2DfaData} title="NFA -> DFA Data" />
+        <JsonViewComponent data={nfa2DfaData} title="NFA -> DFA Data" /> */}
 
         {/* <section className="space-y-2">
           <p className="font-semibold text-lg">DFA Data Converter</p>

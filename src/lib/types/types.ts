@@ -75,8 +75,10 @@ export type ENFADataProps = {
 
 // converter output types
 export type ENFA2NFADataProps = {
-  enfaData: ENFADataProps;
-  enfaClosures: { [key: string]: string[] };
+  others: {
+    enfaData: ENFADataProps;
+    enfaClosures: { [key: string]: string[] };
+  };
   nfaData: NFADataProps;
 };
 
