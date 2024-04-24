@@ -20,17 +20,20 @@ export default function NavbarComponent() {
           className="flex items-center justify-between h-16"
         >
           <Link href={"/"}>
-            <Button variant={"link"} className="text-primary font-semibold">
+            <Button
+              variant={"link"}
+              className="text-primary font-semibold px-0"
+            >
               Finite Automata
             </Button>
           </Link>
 
-          <div>
+          <div className="flex items-center gap-6">
             {menus.map((menu, index) => (
               <Link href={menu.href}>
                 <Button
                   variant={"link"}
-                  className="text-muted-foreground font-normal"
+                  className="text-muted-foreground font-normal px-0"
                 >
                   {menu.title}
                 </Button>
