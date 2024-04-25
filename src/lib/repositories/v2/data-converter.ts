@@ -16,24 +16,24 @@ const convertDFAInput = (input: DFAInputProps): DFADataProps => {
     [key: string]: {
       [key: string]: string;
     };
-  } = {};
+  } = input.transitions;
 
   // menginisialisasi empty transitions object
-  for (const state of states) {
-    transitions[state] = {};
-    for (const alphabet of alphabets) {
-      transitions[state][alphabet] = "";
-    }
-  }
+  // for (const state of states) {
+  //   transitions[state] = {};
+  //   for (const alphabet of alphabets) {
+  //     transitions[state][alphabet] = "";
+  //   }
+  // }
 
   // men-generate transisi berdasakan masukan user
-  for (const state of states) {
-    const strPairDestinations = input.transitions[state];
-    const pairDestinations = strPairDestinations.split(",");
-    for (let a = 0; a < alphabets.length; a++) {
-      transitions[state][alphabets[a]] = pairDestinations[a];
-    }
-  }
+  // for (const state of states) {
+  //   const strPairDestinations = input.transitions[state];
+  //   const pairDestinations = strPairDestinations.split(",");
+  //   for (let a = 0; a < alphabets.length; a++) {
+  //     transitions[state][alphabets[a]] = pairDestinations[a];
+  //   }
+  // }
 
   return {
     alphabets,

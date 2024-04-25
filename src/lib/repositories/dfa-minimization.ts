@@ -36,11 +36,11 @@ const generateDFAData = (input: DFAInputProps): DFADataProps => {
       [key: string]: string;
     } = {};
 
-    const nextStates = value.toLowerCase().split(";");
-    for (let a = 0; a < alphabets.length; a++) {
-      const alphabet = alphabets[a];
-      innerTransitions[alphabet] = nextStates[a];
-    }
+    // const nextStates = value.toLowerCase().split(";");
+    // for (let a = 0; a < alphabets.length; a++) {
+    //   const alphabet = alphabets[a];
+    //   innerTransitions[alphabet] = nextStates[a];
+    // }
 
     transitions[key] = innerTransitions;
   }

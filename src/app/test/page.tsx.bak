@@ -128,16 +128,17 @@ export default function Page() {
     states: "a,b,c,d,e,f,g,h",
     startState: "a",
     finalStates: "e", // coba cek manual ketika ditambah b,e
-    transitions: {
-      a: "c,d",
-      b: "h,d",
-      c: "f,e",
-      d: "e,f",
-      e: "a,e",
-      f: "f,b",
-      g: "e,f",
-      h: "f,e",
-    },
+    transitions: {},
+    // transitions: {
+    //   'a': "c,d",
+    //   'b': "h,d",
+    //   'c': "f,e",
+    //   'd': "e,f",
+    //   'e': "a,e",
+    //   'f': "f,b",
+    //   'g': "e,f",
+    //   'h': "f,e",
+    // },
   };
   const dfaData = dataConverterRepository.convertDFAInput(dfaInput);
   const minifiedDfaData =

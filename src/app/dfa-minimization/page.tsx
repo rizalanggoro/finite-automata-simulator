@@ -27,7 +27,6 @@ import {
   DFAMinimizationDataProps,
   dfaMinimizationRepository,
 } from "@/lib/repositories/dfa-minimization";
-import { diagramRepository } from "@/lib/repositories/v2/diagram";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -76,19 +75,18 @@ export default function Page() {
   >();
 
   const onClickButtonGenerate = () => {
-    const result = dfaMinimizationRepository.generateMinimization({
-      alphabets,
-      states,
-      startState,
-      finalStates,
-      transitions,
-    });
-
-    setDfaMinimizationData(result);
-    setDiagram({
-      initial: diagramRepository.generateDFA(result.initialData),
-      minified: diagramRepository.generateDFA(result.minifiedData),
-    });
+    // const result = dfaMinimizationRepository.generateMinimization({
+    //   alphabets,
+    //   states,
+    //   startState,
+    //   finalStates,
+    //   transitions,
+    // });
+    // setDfaMinimizationData(result);
+    // setDiagram({
+    //   initial: diagramRepository.generateDFA(result.initialData),
+    //   minified: diagramRepository.generateDFA(result.minifiedData),
+    // });
   };
 
   const onClickButtonCheck = () => {

@@ -111,7 +111,10 @@ const generateNewFinalStates = (
 
   for (const finalState of data.finalStates) {
     for (const entry of Object.entries(equivalences)) {
-      if (entry[0] === finalState || entry[1].includes(finalState)) {
+      if (
+        (entry[0] === finalState || entry[1].includes(finalState)) &&
+        !finalStates.includes(entry[0])
+      ) {
         finalStates.push(entry[0]);
         break;
       }

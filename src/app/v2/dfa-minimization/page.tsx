@@ -1,162 +1,280 @@
 "use client";
 
+import dfaExamples from "@/assets/examples/dfa.json";
+import BreadCrumbComponent from "@/components/breadcrumb";
 import ContainerComponent from "@/components/container";
-import JsonViewComponent from "@/components/json-view";
-import { Input } from "@/components/ui/input";
+import DiagramInputComponent from "@/components/diagram-input";
+import MermaidComponent from "@/components/mermaid";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useMemo, useState } from "react";
-
-const getStrings = (str: string, delimiter: string): string[] => {
-  if (str.trim().length > 0) {
-    return str.split(delimiter).filter((it) => it.trim().length > 0);
-  }
-
-  return [];
-};
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
+import { dfaMinimizationRepository } from "@/lib/repositories/v2/dfa-minimization";
+import { diagramRepository } from "@/lib/repositories/v2/diagram";
+import { DFADataProps, DiagramInputTransitionsProps } from "@/lib/types/types";
+import { Dices, Minimize2, RotateCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  // dfa input
   const [alphabets, setAlphabets] = useState("");
   const [states, setStates] = useState("");
   const [startState, setStartState] = useState("");
   const [finalStates, setFinalStates] = useState("");
-  const [transitions, setTransitions] = useState<{
-    [key: string]: {
-      [key: string]: string;
-    };
-  }>({});
-
-  const arrAlphabets = useMemo(() => getStrings(alphabets, ","), [alphabets]);
-  const arrStates = useMemo(() => Object.keys(transitions), [transitions]);
-  const arrFinalStates = useMemo(
-    () => getStrings(finalStates, ","),
-    [finalStates]
+  const [transitions, setTransitions] = useState<DiagramInputTransitionsProps>(
+    {}
   );
 
+  const [exampleIndex, setExampleIndex] = useState(0);
+  const [minifiedDfa, setMinifiedDfa] = useState<{
+    others: {
+      subsets: { [key: string]: string[] }[];
+      newStates: string[];
+      equivalences: { [key: string]: string[] };
+      newFinalStates: string[];
+      newTransitions: { [key: string]: { [key: string]: string } };
+    };
+    dfaData: DFADataProps;
+  }>();
+  const [diagrams, setDiagrams] = useState({
+    initial: "",
+    minified: "",
+  });
+  const [isGenerated, setIsGenerated] = useState(false);
+
+  const onClickButtonMinimize = () => {
+    const data = dataConverterRepository.convertDFAInput({
+      alphabets,
+      states,
+      startState,
+      finalStates,
+      transitions,
+    });
+
+    const result = dfaMinimizationRepository.convertDFAToMinifiedDFA(data);
+
+    setDiagrams({
+      initial: diagramRepository.generateDFA(data),
+      minified: diagramRepository.generateDFA(result.dfaData),
+    });
+
+    setMinifiedDfa(result);
+    setIsGenerated(true);
+  };
+
+  const onClickButtonReset = () => {
+    setAlphabets("");
+    setStates("");
+    setStartState("");
+    setFinalStates("");
+    setTransitions({});
+    setIsGenerated(false);
+  };
+
+  const onClickButtonExample = () => {
+    const examplesCount = dfaExamples.length;
+
+    const example = dfaExamples[exampleIndex];
+    setAlphabets(example.alphabets.join(","));
+    setStates(example.states.join(","));
+    setStartState(example.startState);
+    setFinalStates(example.finalStates.join(","));
+    setTimeout(() => setTransitions(example.transitions as any), 100);
+
+    setExampleIndex(exampleIndex < examplesCount - 1 ? exampleIndex + 1 : 0);
+  };
+
   useEffect(() => {
-    const arrAlphabets = getStrings(alphabets, ",");
-    const arrStates = getStrings(states, ",");
-
-    if (arrAlphabets.length > 0 && arrStates.length > 0) {
-      const containerTransitions: {
-        [key: string]: {
-          [key: string]: string;
-        };
-      } = {};
-
-      for (const state of arrStates) {
-        containerTransitions[state] = {};
-        for (const alphabet of arrAlphabets) {
-          containerTransitions[state][alphabet] = "";
-        }
-      }
-
-      setTransitions(containerTransitions);
-    } else {
-      setTransitions({});
-    }
-  }, [alphabets, states]);
+    setIsGenerated(false);
+  }, [alphabets, states, startState, finalStates, transitions]);
 
   return (
     <>
-      <ContainerComponent safeTop>
-        <p>DFA Minimization</p>
-
-        <Input
-          placeholder="Masukkan alphabets"
-          value={alphabets}
-          onChange={(e) => setAlphabets(e.target.value)}
-        />
-        <Input
-          placeholder="Masukkan states"
-          value={states}
-          onChange={(e) => setStates(e.target.value)}
-        />
-        <Input
-          placeholder="Masukkan start state"
-          value={startState}
-          onChange={(e) => setStartState(e.target.value)}
-        />
-        <Input
-          placeholder="Masukkan final states"
-          value={finalStates}
-          onChange={(e) => setFinalStates(e.target.value)}
+      <ContainerComponent safeTop className="py-8">
+        <BreadCrumbComponent
+          items={[
+            { label: "Home", href: "/" },
+            { label: "DFA Minimization", href: "/v2/dfa-minimization" },
+          ]}
         />
 
-        {arrAlphabets.length > 0 && arrStates.length > 0 && (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>State</TableHead>
-                {arrAlphabets.map((item, index) => (
-                  <TableHead>{item}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {arrStates.map((item, index) => (
-                <TableRow>
-                  <TableCell>
-                    {item === startState && "-> "}
-                    {arrFinalStates.includes(item) && "*"}
-                    {item}
-                  </TableCell>
-                  {arrAlphabets.map((item2, index2) => (
-                    <TableCell>
-                      <Input
-                        className="min-w-16"
-                        value={transitions[item][item2]}
-                        onChange={(e) => {
-                          setTransitions({
-                            ...transitions,
-                            [item]: {
-                              ...transitions[item],
-                              [item2]: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-                    </TableCell>
+        <p className="text-3xl font-semibold mt-4">DFA Minimization</p>
+        <p className="mt-2">
+          Simulator untuk mengubah DFA menjadi minimal, kemudian pengguna dapat
+          mengetes kedua DFA tersebut (sebelum dan sesudah dilakukan minimisasi)
+        </p>
+
+        <DiagramInputComponent
+          diagramType="dfa"
+          input={{
+            alphabets,
+            states,
+            startState,
+            finalStates,
+            transitions,
+            setAlphabets,
+            setStates,
+            setStartState,
+            setFinalStates,
+            setTransitions,
+          }}
+          className="mt-8"
+        />
+
+        <div className="flex items-center gap-2 justify-end mt-4">
+          <Button variant={"secondary"} onClick={onClickButtonExample}>
+            <Dices className="w-4 h-4 mr-2" />
+            Contoh
+          </Button>
+          <Button variant={"destructive"} onClick={onClickButtonReset}>
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset
+          </Button>
+          <Button onClick={onClickButtonMinimize} disabled={isGenerated}>
+            <Minimize2 className="w-4 h-4 mr-2" />
+            Minimisasi
+          </Button>
+        </div>
+
+        {/* result */}
+        {isGenerated && minifiedDfa && (
+          <>
+            {/* <JsonViewComponent data={minifiedDfa} /> */}
+
+            <Separator className="mt-8" />
+
+            <section className="mt-8">
+              <p className="text-xl font-semibold">Subset Construction</p>
+              <p>
+                Berikut adalah hasil minimisasi menggunakan metode subset
+                construction. Dimana terdapat terdapat{" "}
+                {minifiedDfa.others.subsets.length} equivalences sebagai berikut
+              </p>
+              <Table className="mt-4">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Step</TableHead>
+                    <TableHead>Equivalence</TableHead>
+                    <TableHead>Subset</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {minifiedDfa.others.subsets.map((subset, index) => (
+                    <TableRow key={"table-row-subset-" + index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>Eq-{index}</TableCell>
+                      <TableCell>
+                        {"{"}
+                        {Object.values(subset)
+                          .map((item) => item)
+                          .join("} {")}
+                        {"}"}
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={2}>States</TableCell>
+                    <TableCell>
+                      {minifiedDfa.others.newStates.join(",")}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell colSpan={2}>Final states</TableCell>
+                    <TableCell>
+                      {minifiedDfa.others.newFinalStates.join(",")}
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </section>
 
-        {/* <div className="grid grid-cols-2">
-          {Object.keys(transitions).map((item, index) => (
-            <div className="inline-block">
-              {getStrings(alphabets, ",").map((item2, index2) => (
-                <div>
-                  <Label>
-                    {item} {"->"} {item2}
-                  </Label>
-                  <Input
-                    value={transitions[item][item2]}
-                    onChange={(e) =>
-                      setTransitions({
-                        ...(transitions ?? {}),
-                        [item]: {
-                          ...(transitions[item] ?? {}),
-                          [item2]: e.target.value,
-                        },
-                      })
-                    }
+            <section className="mt-8">
+              <p className="font-semibold text-xl">Transitions Table</p>
+              <p>
+                Berikut adalah transitions table dari DFA setelah dilakukan
+                minimisasi menjadi {minifiedDfa.others.newStates.length} states
+              </p>
+
+              <Table className="mt-4">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>State</TableHead>
+                    {minifiedDfa.dfaData.alphabets.map((alphabet, index) => (
+                      <TableHead key={"transitions-table-head-" + index}>
+                        {alphabet}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Object.entries(minifiedDfa.dfaData.transitions).map(
+                    (entry, index) => (
+                      <TableRow key={"transitions-table-row-" + index}>
+                        <TableCell>
+                          {entry[0] === minifiedDfa.dfaData.startState && "-> "}
+                          {minifiedDfa.dfaData.finalStates.includes(entry[0]) &&
+                            "*"}
+                          {entry[0]}
+                        </TableCell>
+                        {minifiedDfa.dfaData.alphabets.map(
+                          (alphabet, index2) => (
+                            <TableCell
+                              key={
+                                "transitions-table-row-cell-" + index + index2
+                              }
+                            >
+                              {entry[1][alphabet]}
+                            </TableCell>
+                          )
+                        )}
+                      </TableRow>
+                    )
+                  )}
+                </TableBody>
+              </Table>
+            </section>
+
+            <section className="mt-8">
+              <p className="font-semibold text-xl">State Diagram</p>
+              <p>
+                Berikut adalah state diagram DFA sebelum dan sesudah dilakukan
+                minimisasi
+              </p>
+
+              <Tabs defaultValue="initial" className="w-full mt-4">
+                <TabsList className="w-full grid grid-cols-2">
+                  <TabsTrigger value="initial">Initial</TabsTrigger>
+                  <TabsTrigger value="minified">Minimisasi</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="initial">
+                  <MermaidComponent
+                    chart={diagrams.initial}
+                    id="initial-dfa-diagram"
                   />
-                </div>
-              ))}
-            </div>
-          ))}
-        </div> */}
+                </TabsContent>
 
-        <JsonViewComponent data={transitions} title="Transitions" />
+                <TabsContent value="minified">
+                  <MermaidComponent
+                    chart={diagrams.minified}
+                    id="minified-dfa-diagram"
+                  />
+                </TabsContent>
+              </Tabs>
+            </section>
+          </>
+        )}
       </ContainerComponent>
     </>
   );

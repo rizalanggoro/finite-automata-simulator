@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 mermaid.initialize({
   securityLevel: "loose",
+  theme: "forest",
 });
 
 export default function MermaidComponent({

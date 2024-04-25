@@ -4,9 +4,10 @@ export type DFAInputProps = {
   startState: string;
   finalStates: string;
   alphabets: string;
-  transitions: {
-    [key: string]: string;
-  };
+  // transitions: {
+  //   [key: string]: string;
+  // };
+  transitions: DiagramInputTransitionsProps;
 };
 
 export type DFADataProps = {
@@ -108,4 +109,10 @@ export type E_NFA2DFADataProps = {
     };
   };
   dfaFinalStates: string[];
+};
+
+export type DiagramInputTransitionsProps = {
+  [key: string]: {
+    [key: string]: string;
+  };
 };
