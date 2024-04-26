@@ -1,6 +1,6 @@
 "use client";
 
-import dfaExamples from "@/assets/examples/dfa.json";
+import dfaMinimizationExamples from "@/assets/examples/dfa-minimization.json";
 import BreadCrumbComponent from "@/components/breadcrumb";
 import ContainerComponent from "@/components/container";
 import DiagramInputComponent from "@/components/diagram-input";
@@ -81,9 +81,9 @@ export default function Page() {
   };
 
   const onClickButtonExample = () => {
-    const examplesCount = dfaExamples.length;
+    const examplesCount = dfaMinimizationExamples.length;
 
-    const example = dfaExamples[exampleIndex];
+    const example = dfaMinimizationExamples[exampleIndex];
     setAlphabets(example.alphabets.join(","));
     setStates(example.states.join(","));
     setStartState(example.startState);

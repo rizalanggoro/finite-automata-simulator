@@ -109,6 +109,7 @@ export default function DiagramInputComponent(props: Props) {
         {alphabets.length > 0 && states.length > 0 && (
           <div className="mt-4 space-y-2">
             <p className="font-semibold text-lg">Transitions</p>
+            <p>Masukkan transisi untuk setiap state pada table di bawah ini</p>
             <Table>
               <TableHeader>
                 <TableRow>

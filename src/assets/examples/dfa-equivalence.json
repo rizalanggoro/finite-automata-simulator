@@ -1,0 +1,94 @@
+[
+  [
+    {
+      "alphabets": ["c", "d"],
+      "states": ["q1", "q2", "q3"],
+      "startState": "q1", 
+      "finalStates": ["q1"],
+      "transitions": {
+        "q1": {
+          "c": "q1", 
+          "d": "q2"
+        }, 
+        "q2": {
+          "c": "q3", 
+          "d": "q1"
+        }, 
+        "q3": {
+          "c": "q2", 
+          "d": "q3"
+        }
+      }
+    },
+    {
+      "alphabets": ["c", "d"],
+      "states": ["q4", "q5", "q6", "q7"],
+      "startState": "q4", 
+      "finalStates": ["q4"],
+      "transitions": {
+        "q4": {
+          "c": "q4", 
+          "d": "q5"
+        }, 
+        "q5": {
+          "c": "q6", 
+          "d": "q4"
+        }, 
+        "q6": {
+          "c": "q7", 
+          "d": "q6"
+        }, 
+        "q7": {
+          "c": "q6", 
+          "d": "q4"
+        }
+      }
+    }
+  ],
+  [
+    {
+      "alphabets": ["c", "d"],
+      "states": ["q1", "q2", "q3"],
+      "startState": "q1", 
+      "finalStates": ["q1"],
+      "transitions": {
+        "q1": {
+          "c": "q1",
+          "d": "q2"
+        },
+        "q2": {
+          "c": "q3",
+          "d": "q1"
+        },
+        "q3": {
+          "c": "q3",
+          "d": "q1"
+        }
+      }
+    },
+    {
+      "alphabets": ["c", "d"],
+      "states": ["q4", "q5", "q6", "q7"],
+      "startState": "q4", 
+      "finalStates": ["q4"],
+      "transitions": {
+        "q4": {
+          "c": "q4",
+          "d": "q5"
+        },
+        "q5": {
+          "c": "q7",
+          "d": "q6"
+        },
+        "q6": {
+          "c": "q7",
+          "d": "q6"
+        },
+        "q7": {
+          "c": "q4",
+          "d": "q5"
+        }
+      }
+    }
+  ]
+]

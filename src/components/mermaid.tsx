@@ -19,7 +19,7 @@ export default function MermaidComponent({
   }, [chart, id]);
 
   return (
-    <div className="mermaid" id={id}>
+    <div className="mermaid justify-center flex py-8" id={id}>
       {chart}
     </div>
   );

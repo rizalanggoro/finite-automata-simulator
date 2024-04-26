@@ -6,9 +6,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import {
+  AlignJustify,
+  Minimize2,
+  Regex,
+  Repeat,
+  SpellCheck,
+} from "lucide-react";
 import Link from "next/link";
 
 type MenuItem = {
+  icon?: React.ReactNode;
   title: string;
   description: string;
   href: string;
@@ -16,25 +24,35 @@ type MenuItem = {
 
 const menus: Array<MenuItem> = [
   {
+    icon: <Repeat className="w-4 h-4" />,
     title: "NFA, e-NFA Konverter",
     description:
       "Simulator untuk menghasilkan sebuah DFA berdasarkan masukan NFA atau e-NFA dari pengguna",
-    href: "/nfa-enfa-converter",
+    href: "/",
   },
   {
+    icon: <Regex className="w-4 h-4" />,
     title: "Regex Koverter",
     description:
       "Simulator untuk menghasilkan sebuah e-NFA sesuai dengan regular expression yang dimasukkan oleh pengguna",
     href: "/",
   },
   {
+    icon: <Minimize2 className="w-4 h-4" />,
     title: "Minimisasi DFA",
     description:
       "Simulator untuk mengubah DFA menjadi minimal dimana pengguna dapat mengetes kedua DFA tersebut (sebelum dan sesudah minimalisasi)",
-    href: "/dfa-minimization",
+    href: "/v2/dfa-minimization",
   },
-  { title: "DFA Ekuivalensi", description: "lorem ipsum", href: "/" },
   {
+    icon: <AlignJustify className="w-4 h-4" />,
+    title: "DFA Ekuivalensi",
+    description:
+      "Simulator untuk mengecek ekuivalensi antara dua buah masukan DFA",
+    href: "/v2/dfa-equivalence",
+  },
+  {
+    icon: <SpellCheck className="w-4 h-4" />,
     title: "DFA, NFA, e-NFA, Regex Validator",
     description: "lorem ipsum",
     href: "/",
@@ -83,6 +101,7 @@ function GridItemCard({ menu }: GridItemCardProps) {
       <Link href={menu.href}>
         <Card className={cn(menu.href === "/" && "opacity-30")}>
           <CardHeader>
+            {menu.icon && menu.icon}
             <CardTitle className="text-lg">{menu.title}</CardTitle>
             <CardDescription>{menu.description}</CardDescription>
           </CardHeader>
