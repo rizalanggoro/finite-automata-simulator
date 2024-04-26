@@ -19,7 +19,7 @@ export default function ContainerComponent({
           variant === "md" && "max-w-[768px]",
           variant === "lg" && "max-w-[1024px]",
           props.className,
-          props.safeTop && "mt-16"
+          props.safeTop && "mt-[4.25rem]"
         )}
       >
         {props.children}

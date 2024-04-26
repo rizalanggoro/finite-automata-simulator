@@ -1,4 +1,5 @@
 import ContainerComponent from "@/components/container";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -101,9 +102,18 @@ function GridItemCard({ menu }: GridItemCardProps) {
       <Link href={menu.href}>
         <Card className={cn(menu.href === "/" && "opacity-30")}>
           <CardHeader>
-            {menu.icon && menu.icon}
-            <CardTitle className="text-lg">{menu.title}</CardTitle>
-            <CardDescription>{menu.description}</CardDescription>
+            {menu.icon && (
+              <Button size={"icon"} variant={"secondary"}>
+                {menu.icon}
+              </Button>
+            )}
+
+            <CardTitle className="text-lg pt-2">{menu.title}</CardTitle>
+            <CardDescription>
+              {menu.href === "/"
+                ? "Dalam tahap pengembangan..."
+                : menu.description}
+            </CardDescription>
           </CardHeader>
         </Card>
       </Link>

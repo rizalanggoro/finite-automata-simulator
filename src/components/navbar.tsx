@@ -7,14 +7,15 @@ type MenuItem = {
   href: string;
 };
 const menus: Array<MenuItem> = [
-  { title: "Dokumentasi", href: "/docs" },
+  // { title: "Dokumentasi", href: "/docs" },
   { title: "Tentang", href: "/about" },
 ];
 
 export default function NavbarComponent() {
   return (
     <>
-      <div className="border-b h-16 w-full fixed top-0 z-10 backdrop-blur bg-background/10">
+      <div className="fixed top-0 w-full h-1 bg-gradient-to-r from-lime-300 to-amber-300"></div>
+      <div className="border-b h-16 w-full fixed top-0 mt-1 z-10 backdrop-blur bg-background/10">
         <ContainerComponent
           variant="lg"
           className="flex items-center justify-between h-16"
