@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
 import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
 import { dfaMinimizationRepository } from "@/lib/repositories/v2/dfa-minimization";
 import { diagramRepository } from "@/lib/repositories/v2/diagram";
@@ -50,25 +51,34 @@ export default function Page() {
     minified: "",
   });
   const [isGenerated, setIsGenerated] = useState(false);
+  const { toast } = useToast();
 
   const onClickButtonMinimize = () => {
-    const data = dataConverterRepository.convertDFAInput({
-      alphabets,
-      states,
-      startState,
-      finalStates,
-      transitions,
-    });
+    try {
+      const data = dataConverterRepository.convertDFAInput({
+        alphabets,
+        states,
+        startState,
+        finalStates,
+        transitions,
+      });
 
-    const result = dfaMinimizationRepository.convertDFAToMinifiedDFA(data);
+      const result = dfaMinimizationRepository.convertDFAToMinifiedDFA(data);
 
-    setDiagrams({
-      initial: diagramRepository.generateDFA(data),
-      minified: diagramRepository.generateDFA(result.dfaData),
-    });
+      setDiagrams({
+        initial: diagramRepository.generateDFA(data),
+        minified: diagramRepository.generateDFA(result.dfaData),
+      });
 
-    setMinifiedDfa(result);
-    setIsGenerated(true);
+      setMinifiedDfa(result);
+      setIsGenerated(true);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Terjadi kesalahan!",
+        description: String(e),
+      });
+    }
   };
 
   const onClickButtonReset = () => {
@@ -91,6 +101,14 @@ export default function Page() {
     setTimeout(() => setTransitions(example.transitions as any), 100);
 
     setExampleIndex(exampleIndex < examplesCount - 1 ? exampleIndex + 1 : 0);
+
+    toast({
+      description:
+        "Menggunakan contoh minimisasi DFA ke-" +
+        (exampleIndex + 1) +
+        " dari " +
+        examplesCount,
+    });
   };
 
   useEffect(() => {

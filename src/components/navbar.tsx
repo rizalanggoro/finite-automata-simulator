@@ -14,7 +14,7 @@ const menus: Array<MenuItem> = [
 export default function NavbarComponent() {
   return (
     <>
-      <div className="fixed top-0 w-full h-1 bg-gradient-to-r from-lime-300 to-amber-300"></div>
+      <div className="fixed top-0 w-full z-10 h-1 bg-gradient-to-r from-lime-300 to-amber-300"></div>
       <div className="border-b h-16 w-full fixed top-0 mt-1 z-10 backdrop-blur bg-background/10">
         <ContainerComponent
           variant="lg"
