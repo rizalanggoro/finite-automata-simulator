@@ -146,7 +146,7 @@ export default function Page() {
       <ContainerComponent safeTop className="py-8">
         <BreadCrumbComponent
           items={[
-            { label: "Home", href: "/" },
+            { label: "Halaman Utama", href: "/" },
             { label: "DFA Ekuivalensi", href: "/v2/dfa-equivalence" },
           ]}
         />

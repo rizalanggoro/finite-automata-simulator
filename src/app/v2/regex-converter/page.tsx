@@ -81,7 +81,7 @@ export default function Page() {
       <ContainerComponent safeTop className="py-8">
         <BreadCrumbComponent
           items={[
-            { label: "Home", href: "/" },
+            { label: "Halaman Utama", href: "/" },
             { label: "Regex Konverter", href: "/v2/regex-converter" },
           ]}
         />

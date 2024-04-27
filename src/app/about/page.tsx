@@ -1,27 +1,16 @@
+import BreadCrumbComponent from "@/components/breadcrumb";
 import ContainerComponent from "@/components/container";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 export default function Page() {
   return (
     <>
       <ContainerComponent safeTop variant="sm" className="py-8">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/about">Tentang program</BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <BreadCrumbComponent
+          items={[
+            { href: "/", label: "Halaman Utama" },
+            { href: "/about", label: "Tentang Program" },
+          ]}
+        />
 
         <p className="font-semibold text-3xl mt-4">Tentang Program</p>
         <div className="prose mt-2">

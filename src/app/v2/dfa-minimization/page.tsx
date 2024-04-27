@@ -120,7 +120,7 @@ export default function Page() {
       <ContainerComponent safeTop className="py-8">
         <BreadCrumbComponent
           items={[
-            { label: "Home", href: "/" },
+            { label: "Halaman Utama", href: "/" },
             { label: "DFA Minimization", href: "/v2/dfa-minimization" },
           ]}
         />
