@@ -238,8 +238,9 @@ const nfaDisplay = {
       const nodeType = String(node.type);
       const nodeId = String(node.id);
 
-      if (!enfaData.states.includes(nodeId)) enfaData.states.push(nodeId);
-      if (nodeType === "start") enfaData.startState = String(nodeId);
+      if (!enfaData.states.includes("q" + nodeId))
+        enfaData.states.push("q" + nodeId);
+      if (nodeType === "start") enfaData.startState = String("q" + nodeId);
 
       if (visited.has(node)) return;
       visited.add(node);
@@ -249,27 +250,29 @@ const nfaDisplay = {
       }
 
       for (const edge of node.edges) {
-        const from = String(edge[0]);
+        const alphabet = String(edge[0]);
         const to = String(edge[1].id);
         const toType = String(edge[1].type);
 
-        if (from === "ϵ") {
-          enfaData.epsilonTransitions[nodeId] = [
-            ...(enfaData.epsilonTransitions[nodeId] ?? []),
-            to,
+        if (alphabet === "ϵ") {
+          enfaData.epsilonTransitions["q" + nodeId] = [
+            ...(enfaData.epsilonTransitions["q" + nodeId] ?? []),
+            "q" + to,
           ];
         } else {
-          if (!enfaData.alphabets.includes(from)) enfaData.alphabets.push(from);
-          enfaData.transitions[nodeId] = {
-            ...enfaData.transitions[nodeId],
-            [from]: [to],
+          if (!enfaData.alphabets.includes(alphabet))
+            enfaData.alphabets.push(alphabet);
+          enfaData.transitions["q" + nodeId] = {
+            ...enfaData.transitions["q" + nodeId],
+            [alphabet]: ["q" + to],
           };
         }
 
         if (toType === "accept")
-          if (!enfaData.finalStates.includes(to)) enfaData.finalStates.push(to);
+          if (!enfaData.finalStates.includes("q" + to))
+            enfaData.finalStates.push("q" + to);
 
-        console.log(`  ${from} -> ${toType} ${to}`);
+        console.log(`  ${alphabet} -> ${toType} ${to}`);
       }
 
       for (const edge of node.edges) {
