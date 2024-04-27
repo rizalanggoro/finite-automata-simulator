@@ -26,10 +26,10 @@ type MenuItem = {
 const menus: Array<MenuItem> = [
   {
     icon: <Repeat className="w-4 h-4" />,
-    title: "NFA, e-NFA Konverter",
+    title: "NFA, E-NFA Konverter",
     description:
-      "Simulator untuk menghasilkan sebuah DFA berdasarkan masukan NFA atau e-NFA dari pengguna",
-    href: "/",
+      "Simulator untuk menghasilkan sebuah DFA berdasarkan masukan NFA atau E-NFA dari pengguna",
+    href: "/v2/nfa-enfa-converter",
   },
   {
     icon: <Regex className="w-4 h-4" />,

@@ -148,7 +148,7 @@ export default function Page() {
           className="mt-8"
         />
 
-        <div className="flex items-center gap-2 justify-end mt-4">
+        <div className="flex items-center gap-1 justify-end mt-8">
           <Button variant={"secondary"} onClick={onClickButtonExample}>
             <Dices className="w-4 h-4 mr-2" />
             Contoh

@@ -116,3 +116,7 @@ export type DiagramInputTransitionsProps = {
     [key: string]: string;
   };
 };
+
+export type DiagramInputEpsilonTransitionsProps = {
+  [key: string]: string;
+};

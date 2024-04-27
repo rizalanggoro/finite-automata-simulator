@@ -9,7 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DiagramInputTransitionsProps } from "@/lib/types/types";
+import {
+  DiagramInputEpsilonTransitionsProps,
+  DiagramInputTransitionsProps,
+} from "@/lib/types/types";
 import { getStrings } from "@/lib/utils";
 import {
   Dispatch,
@@ -21,19 +24,23 @@ import {
 import { Label } from "./ui/label";
 
 type Props = {
-  diagramType: "dfa" | "nfa" | "enfa";
+  diagramType: "dfa" | "nfa" | "enfa" | string;
   input: {
     alphabets: string;
     states: string;
     startState: string;
     finalStates: string;
     transitions: DiagramInputTransitionsProps;
+    epsilonTransitions?: DiagramInputEpsilonTransitionsProps;
 
     setAlphabets: Dispatch<SetStateAction<string>>;
     setStates: Dispatch<SetStateAction<string>>;
     setStartState: Dispatch<SetStateAction<string>>;
     setFinalStates: Dispatch<SetStateAction<string>>;
     setTransitions: Dispatch<SetStateAction<DiagramInputTransitionsProps>>;
+    setEpsilonTransitions?: Dispatch<
+      SetStateAction<DiagramInputEpsilonTransitionsProps>
+    >;
   };
 } & HTMLAttributes<HTMLDivElement>;
 
@@ -63,15 +70,32 @@ export default function DiagramInputComponent(props: Props) {
       }
 
       props.input.setTransitions(containerTransitions);
+
+      // epsilon transitions
+      if (props.diagramType === "enfa" && props.input.setEpsilonTransitions) {
+        const containerEpsilonTransitions: DiagramInputEpsilonTransitionsProps =
+          {};
+
+        for (const state of states) {
+          containerEpsilonTransitions[state] = "";
+        }
+
+        props.input.setEpsilonTransitions(containerEpsilonTransitions);
+      }
     } else {
       props.input.setTransitions({});
+
+      // epsilon transitions
+      if (props.diagramType === "enfa" && props.input.setEpsilonTransitions) {
+        props.input.setEpsilonTransitions({});
+      }
     }
-  }, [alphabets, states]);
+  }, [alphabets, states, props.diagramType]);
 
   return (
     <>
       <div className={props.className}>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <div className="space-y-1">
             <Label>Masukkan alphabets</Label>
             <Input
@@ -107,10 +131,14 @@ export default function DiagramInputComponent(props: Props) {
         </div>
 
         {alphabets.length > 0 && states.length > 0 && (
-          <div className="mt-4 space-y-2">
+          <div className="mt-6">
             <p className="font-semibold text-lg">Transitions</p>
-            <p>Masukkan transisi untuk setiap state pada table di bawah ini</p>
-            <Table>
+            <p>
+              Masukkan transisi untuk setiap state pada table di bawah ini
+              {props.diagramType !== "dfa" &&
+                ". Pisahkan setiap state menggunakan tanda koma (,)"}
+            </p>
+            <Table className="mt-4">
               <TableHeader>
                 <TableRow>
                   <TableHead>State</TableHead>
@@ -162,6 +190,55 @@ export default function DiagramInputComponent(props: Props) {
             </Table>
           </div>
         )}
+
+        {/* epsilon transitions */}
+        {props.diagramType &&
+          props.diagramType === "enfa" &&
+          states.length > 0 &&
+          props.input.epsilonTransitions &&
+          props.input.setEpsilonTransitions && (
+            <div className="mt-6">
+              <p className="font-semibold text-lg">Epsilon Transitions</p>
+              <p>
+                Masukkan transisi epsilon untuk setiap state pada table di bawah
+                ini. Pisahkan setiap state menggunakan tanda koma (,)
+              </p>
+
+              <Table className="mt-4">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>State</TableHead>
+                    <TableHead>Epsilon</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {states.map((state, index) => (
+                    <TableRow
+                      key={"epsilon-transitions-table-body-row-" + index}
+                    >
+                      <TableCell>{state}</TableCell>
+                      <TableCell>
+                        {props.input.epsilonTransitions &&
+                          props.input.epsilonTransitions[state] !==
+                            undefined && (
+                            <Input
+                              className="min-w-16"
+                              value={props.input.epsilonTransitions[state]}
+                              onChange={(e) =>
+                                props.input.setEpsilonTransitions!({
+                                  ...props.input.epsilonTransitions,
+                                  [state]: e.target.value.toLowerCase(),
+                                })
+                              }
+                            />
+                          )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
       </div>
     </>
   );

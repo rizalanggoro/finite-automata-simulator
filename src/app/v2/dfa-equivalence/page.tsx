@@ -193,7 +193,7 @@ export default function Page() {
           }}
         />
 
-        <div className="flex items-center justify-end gap-2 mt-8">
+        <div className="flex items-center justify-end gap-1 mt-8">
           <Button variant={"secondary"} onClick={onClickButtonExample}>
             <Dices className="w-4 h-4 mr-2" />
             Contoh
