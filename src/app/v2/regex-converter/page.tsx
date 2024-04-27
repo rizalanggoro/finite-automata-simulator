@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { diagramRepository } from "@/lib/repositories/v2/diagram";
 import { regexConverterRepository } from "@/lib/repositories/v2/regex-converter";
@@ -111,6 +119,63 @@ export default function Page() {
         {isGenerated && result && (
           <>
             <Separator className="mt-8" />
+
+            <section className="mt-8">
+              <p className="font-semibold text-xl">Transitions Table</p>
+              <p>
+                Berikut adalah table transisi hasil konversi dari regular
+                expression menjadi ϵ-NFA
+              </p>
+
+              <Table className="mt-4">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>State</TableHead>
+                    {result.enfaData.alphabets.map((alphabet, index) => (
+                      <TableHead
+                        key={"transitions-table-head-alphabet-" + index}
+                      >
+                        {alphabet}
+                      </TableHead>
+                    ))}
+                    <TableHead>ϵ</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {result.enfaData.states.map((state, index) => {
+                    const transition = result.enfaData.transitions[state];
+                    const epsilonTransition =
+                      result.enfaData.epsilonTransitions[state];
+
+                    return (
+                      <TableRow key={"transitions-table-body-" + index}>
+                        <TableCell>
+                          {state === result.enfaData.startState && "-> "}
+                          {result.enfaData.finalStates.includes(state) && "*"}
+                          {state}
+                        </TableCell>
+                        {result.enfaData.alphabets.map((alphabet, index2) => (
+                          <TableCell
+                            key={
+                              "transitions-table-body-cell-" + index + index2
+                            }
+                          >
+                            {transition && transition[alphabet]
+                              ? transition[alphabet].join(",")
+                              : "∅"}
+                          </TableCell>
+                        ))}
+                        <TableCell>
+                          {epsilonTransition
+                            ? epsilonTransition.join(",")
+                            : "∅"}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </section>
 
             <section className="mt-8">
               <p className="font-semibold text-xl">State Diagram</p>
