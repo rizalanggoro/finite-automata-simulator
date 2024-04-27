@@ -91,7 +91,7 @@ export default function Page() {
           state diagram ϵ-NFA yang berhubungan
         </p>
 
-        <section className="mt-4">
+        <section className="mt-8">
           <div className="space-y-1">
             <Label>Masukkan regular expression</Label>
             <Input
