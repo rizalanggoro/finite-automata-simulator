@@ -33,10 +33,10 @@ const menus: Array<MenuItem> = [
   },
   {
     icon: <Regex className="w-4 h-4" />,
-    title: "Regex Koverter",
+    title: "Regex Konverter",
     description:
       "Simulator untuk menghasilkan sebuah e-NFA sesuai dengan regular expression yang dimasukkan oleh pengguna",
-    href: "/",
+    href: "/v2/regex-converter",
   },
   {
     icon: <Minimize2 className="w-4 h-4" />,
@@ -72,19 +72,33 @@ export default function Page() {
 
         <div className="grid md:hidden grid-cols-1 gap-2 mt-8">
           {menus.map((menu, index) => (
-            <GridItemCard menu={menu} />
+            <GridItemCard key={"mobile-grid-item-" + index} menu={menu} />
           ))}
         </div>
 
         <div className="hidden md:grid grid-cols-2 gap-2 mt-8">
           <div className="grid grid-cols-1 gap-2 h-fit">
             {menus.map((menu, index) =>
-              index % 2 == 0 ? <GridItemCard menu={menu} /> : <></>
+              index % 2 == 0 ? (
+                <GridItemCard
+                  key={"desktop-left-grid-item-" + index}
+                  menu={menu}
+                />
+              ) : (
+                <></>
+              )
             )}
           </div>
           <div className="grid grid-cols-1 gap-2 h-fit">
             {menus.map((menu, index) =>
-              index % 2 == 1 ? <GridItemCard menu={menu} /> : <></>
+              index % 2 == 1 ? (
+                <GridItemCard
+                  key={"desktop-right-grid-item-" + index}
+                  menu={menu}
+                />
+              ) : (
+                <></>
+              )
             )}
           </div>
         </div>
