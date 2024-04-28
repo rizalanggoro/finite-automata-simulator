@@ -2,6 +2,7 @@ import NavbarComponent from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,6 +22,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <NavbarComponent />
+        <NextTopLoader
+          showSpinner={false}
+          height={4}
+          showAtBottom={false}
+          zIndex={11}
+          color="#65a30d"
+        />
         {children}
 
         <Toaster />
