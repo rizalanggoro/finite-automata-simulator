@@ -16,6 +16,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
@@ -274,6 +282,55 @@ export default function Page() {
         {isGenerated && result && (
           <>
             <Separator className="mt-8" />
+
+            <section className="mt-8">
+              <p className="font-semibold text-xl">Transitions Table</p>
+              <p>
+                Berikut adalah tabel transisi hasil konversi{" "}
+                {inputDiagramType === "nfa" ? "NFA" : "Epsilon NFA"} menjadi DFA
+              </p>
+
+              <Table className="mt-4">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>State</TableHead>
+                    {result.dfaData.alphabets.map((alphabet, index) => (
+                      <TableHead key={"transitions-table-head-" + index}>
+                        {alphabet}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {result.dfaData.states.map((state, index) => {
+                    const isStartState = state === result.dfaData.startState;
+                    const isFinalState =
+                      result.dfaData.finalStates.includes(state);
+                    const transition = result.dfaData.transitions[state];
+
+                    return (
+                      <TableRow key={"transitions-table-body-" + index}>
+                        <TableCell>
+                          {isStartState && "-> "}
+                          {isFinalState && "*"}
+                          {state}
+                        </TableCell>
+
+                        {result.dfaData.alphabets.map((alphabet, index2) => (
+                          <TableCell
+                            key={"transitions-table-body-" + index + index2}
+                          >
+                            {transition[alphabet] === "empty"
+                              ? "∅"
+                              : transition[alphabet]}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </section>
 
             <section className="mt-8">
               <p className="font-semibold text-xl">State Diagram</p>
