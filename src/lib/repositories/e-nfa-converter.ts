@@ -28,26 +28,26 @@ const generateE_NFAData = (input: ENFAInputProps): ENFADataProps => {
     [key: string]: string[];
   } = {};
 
-  for (const transition of Object.entries(input.transitions)) {
-    const key = transition[0].toLowerCase();
-    const value = transition[1].toLowerCase();
+  // for (const transition of Object.entries(input.transitions)) {
+  //   const key = transition[0].toLowerCase();
+  //   const value = transition[1].toLowerCase();
 
-    const values = value.split(";");
-    let index = 0;
-    for (const alphabet of alphabets) {
-      const strCurrentValues: string = values[index];
-      if (strCurrentValues.length > 0) {
-        transitionsTable[key][alphabet] = strCurrentValues.split(",");
-      }
+  //   const values = value.split(";");
+  //   let index = 0;
+  //   for (const alphabet of alphabets) {
+  //     const strCurrentValues: string = values[index];
+  //     if (strCurrentValues.length > 0) {
+  //       transitionsTable[key][alphabet] = strCurrentValues.split(",");
+  //     }
 
-      index++;
-    }
-  }
+  //     index++;
+  //   }
+  // }
 
   console.log("aaa", transitionsTable);
 
   // epsilon transitions
-  for (const epsilonTransition of Object.entries(input.epsilons)) {
+  for (const epsilonTransition of Object.entries(input.epsilonTransitions)) {
     const key = epsilonTransition[0].toLowerCase();
     const value = epsilonTransition[1].toLowerCase();
 

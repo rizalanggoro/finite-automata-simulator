@@ -22,7 +22,7 @@ const generateDFA = (data: DFADataProps): string => {
     for (const alphabet of data.alphabets) {
       const state = transition[0];
       const destination = transition[1][alphabet];
-      if (destination.length > 0)
+      if (destination.length > 0 && destination !== "empty")
         code += "\n" + state + " -- " + alphabet + " --> " + destination;
       else code += "\n" + state + " -- " + alphabet + " --> empty((∅))";
     }
@@ -95,7 +95,7 @@ const generateE_NFA = (data: ENFADataProps) => {
   }
 
   // create epsilon transitions
-  console.log(data.epsilonTransitions);
+  // console.log(data.epsilonTransitions);
   for (const epsilonTransition of Object.entries(data.epsilonTransitions)) {
     const state = epsilonTransition[0];
 
@@ -105,7 +105,7 @@ const generateE_NFA = (data: ENFADataProps) => {
     }
   }
 
-  console.log(code);
+  // console.log(code);
 
   return code;
 };

@@ -1,8 +1,4 @@
-import {
-  ENFA2NFADataProps,
-  ENFADataProps,
-  ENFAInputProps,
-} from "../../types/types";
+import { ENFADataProps, ENFAInputProps, NFADataProps } from "../../types/types";
 import { dataConverterRepository } from "./data-converter";
 
 const generateClosures = (data: ENFADataProps) => {
@@ -36,7 +32,11 @@ const generateClosures = (data: ENFADataProps) => {
   return result;
 };
 
-const generateNewTransitions = (data: ENFADataProps) => {
+// deprecated
+const generateNewTransitions = (
+  data: ENFADataProps,
+  closures: { [key: string]: string[] }
+) => {
   const transitions: {
     [key: string]: {
       [key: string]: string[];
@@ -46,7 +46,10 @@ const generateNewTransitions = (data: ENFADataProps) => {
   for (const entry of Object.entries(data.transitions)) {
     const key = entry[0];
     const value = entry[1];
-    const epsilonTransitions = data.epsilonTransitions[key];
+    // const epsilonTransitions = data.epsilonTransitions[key];
+    const epsilonTransitions = closures[key];
+
+    console.log({ key, epsilonTransitions });
 
     transitions[key] = value;
 
@@ -60,6 +63,8 @@ const generateNewTransitions = (data: ENFADataProps) => {
             }
           }
         }
+
+        transitions[key][alphabet].sort();
       }
     }
   }
@@ -91,16 +96,76 @@ const generateNewFinalStates = (
   return finalStates;
 };
 
-const convertENFAInputToNFA = (input: ENFAInputProps): ENFA2NFADataProps => {
-  const data = dataConverterRepository.convertENFAInput(input);
+const generateNewTransitions2 = (
+  data: ENFADataProps,
+  closures: { [key: string]: string[] }
+) => {
+  const transitions: {
+    [key: string]: {
+      [key: string]: string[];
+    };
+  } = {};
+
+  // initialize empty transitions
+  for (const state of data.states) {
+    transitions[state] = {};
+    for (const alphabet of data.alphabets) {
+      transitions[state][alphabet] = [];
+    }
+  }
+
+  for (const state of data.states) {
+    if (closures[state].length === 1) {
+      for (const alphabet of data.alphabets) {
+        data.transitions[state][alphabet].forEach((item) => {
+          if (!transitions[state][alphabet].includes(item))
+            transitions[state][alphabet].push(item);
+        });
+
+        transitions[state][alphabet].sort();
+      }
+    } else if (closures[state].length > 1) {
+      // epsilon*
+      for (const clItem of closures[state]) {
+        // alphabet
+        for (const alphabet of data.alphabets) {
+          const transition = data.transitions[clItem][alphabet];
+          if (state === "a")
+            console.log({ state, clItem, alphabet, transition });
+
+          if (transition && transition.length > 0) {
+            // epsilon*
+            for (const transitionItem of transition) {
+              closures[transitionItem].forEach((item) => {
+                if (!transitions[state][alphabet].includes(item))
+                  transitions[state][alphabet].push(item);
+              });
+            }
+          }
+
+          transitions[state][alphabet].sort();
+        }
+      }
+    }
+  }
+
+  return transitions;
+};
+
+const convertENFAInputToNFA = (input: ENFAInputProps) =>
+  convertENFAToNFA(dataConverterRepository.convertENFAInput(input));
+
+const convertENFAToNFA = (data: ENFADataProps) => {
   const closures = generateClosures(data);
-  const newTransitions = generateNewTransitions(data);
+  const newTransitions = generateNewTransitions2(data, closures);
   const newFinalStates = generateNewFinalStates(data, closures);
 
   return {
     others: {
       enfaData: data,
       enfaClosures: closures,
+      newTransitions,
+      newFinalStates,
     },
     nfaData: {
       alphabets: data.alphabets,
@@ -108,10 +173,11 @@ const convertENFAInputToNFA = (input: ENFAInputProps): ENFA2NFADataProps => {
       startState: data.startState,
       finalStates: newFinalStates,
       transitions: newTransitions,
-    },
+    } as NFADataProps,
   };
 };
 
 export const enfaConverterRepository = {
   convertENFAInputToNFA,
+  convertENFAToNFA,
 };

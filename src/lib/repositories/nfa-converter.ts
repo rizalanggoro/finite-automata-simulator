@@ -22,21 +22,21 @@ const generateNFAData = (input: NFAInputProps): NFADataProps => {
     };
   } = {};
 
-  for (const transition of Object.entries(input.transitions)) {
-    const key = transition[0].toLowerCase();
-    const value = transition[1].toLowerCase();
+  // for (const transition of Object.entries(input.transitions)) {
+  //   const key = transition[0].toLowerCase();
+  //   const value = transition[1].toLowerCase();
 
-    const innerTransitions: { [key: string]: string[] } = {};
+  //   const innerTransitions: { [key: string]: string[] } = {};
 
-    const statesByAlphabet = value.split(";");
-    for (let a = 0; a < alphabets.length; a++) {
-      const alphabet = alphabets[a];
-      if (statesByAlphabet[a].length > 0)
-        innerTransitions[alphabet] = statesByAlphabet[a].split(",");
-    }
+  //   const statesByAlphabet = value.split(";");
+  //   for (let a = 0; a < alphabets.length; a++) {
+  //     const alphabet = alphabets[a];
+  //     if (statesByAlphabet[a].length > 0)
+  //       innerTransitions[alphabet] = statesByAlphabet[a].split(",");
+  //   }
 
-    transitions[key] = innerTransitions;
-  }
+  //   transitions[key] = innerTransitions;
+  // }
 
   // const _transitions = input.transitions.split("\n").map((item) => {
   //   const destinations = item.split(";");

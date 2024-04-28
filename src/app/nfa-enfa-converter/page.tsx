@@ -20,9 +20,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { eNFAConverterRepository } from "@/lib/repositories/e-nfa-converter";
-import { nfaConverterRepository } from "@/lib/repositories/nfa-converter";
-import { diagramRepository } from "@/lib/repositories/v2/diagram";
 import { E_NFA2DFADataProps, NFA2DFADataProps } from "@/lib/types/types";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -111,38 +108,35 @@ export default function Page() {
 
   const onClickButtonGenerate = () => {
     if (faType === "nfa") {
-      const result = nfaConverterRepository.generateDFA({
-        alphabets: alphabets.toLowerCase(),
-        states: states.toLowerCase(),
-        startState: startState.toLowerCase(),
-        finalStates: finalStates.toLowerCase(),
-        transitions: transitions,
-      });
-
-      setNfa2dfaData(result);
-      setDiagram({
-        ...diagram,
-        nfa: diagramRepository.generateNFA(result.nfaData),
-        dfa: diagramRepository.generateDFA(result.dfaData),
-      });
+      // const result = nfaConverterRepository.generateDFA({
+      //   alphabets: alphabets.toLowerCase(),
+      //   states: states.toLowerCase(),
+      //   startState: startState.toLowerCase(),
+      //   finalStates: finalStates.toLowerCase(),
+      //   transitions: transitions,
+      // });
+      // setNfa2dfaData(result);
+      // setDiagram({
+      //   ...diagram,
+      //   nfa: diagramRepository.generateNFA(result.nfaData),
+      //   dfa: diagramRepository.generateDFA(result.dfaData),
+      // });
     } else {
-      const result = eNFAConverterRepository.generateDFA({
-        alphabets: alphabets.toLowerCase(),
-        states: states.toLowerCase(),
-        startState: startState.toLowerCase(),
-        finalStates: finalStates.toLowerCase(),
-        transitions: transitions,
-        epsilons,
-      });
-
-      console.log({ result });
-
-      setENfa2dfaData(result);
-      setDiagram({
-        ...diagram,
-        eNfa: diagramRepository.generateE_NFA(result.eNfaData),
-        dfa: diagramRepository.generateDFA(result.dfaData),
-      });
+      // const result = eNFAConverterRepository.generateDFA({
+      //   alphabets: alphabets.toLowerCase(),
+      //   states: states.toLowerCase(),
+      //   startState: startState.toLowerCase(),
+      //   finalStates: finalStates.toLowerCase(),
+      //   transitions: transitions,
+      //   epsilonTransitions: epsilons,
+      // });
+      // console.log({ result });
+      // setENfa2dfaData(result);
+      // setDiagram({
+      //   ...diagram,
+      //   eNfa: diagramRepository.generateE_NFA(result.eNfaData),
+      //   dfa: diagramRepository.generateDFA(result.dfaData),
+      // });
     }
   };
 

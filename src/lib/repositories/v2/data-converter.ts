@@ -18,23 +18,6 @@ const convertDFAInput = (input: DFAInputProps): DFADataProps => {
     };
   } = input.transitions;
 
-  // menginisialisasi empty transitions object
-  // for (const state of states) {
-  //   transitions[state] = {};
-  //   for (const alphabet of alphabets) {
-  //     transitions[state][alphabet] = "";
-  //   }
-  // }
-
-  // men-generate transisi berdasakan masukan user
-  // for (const state of states) {
-  //   const strPairDestinations = input.transitions[state];
-  //   const pairDestinations = strPairDestinations.split(",");
-  //   for (let a = 0; a < alphabets.length; a++) {
-  //     transitions[state][alphabets[a]] = pairDestinations[a];
-  //   }
-  // }
-
   return {
     alphabets,
     states,
@@ -65,13 +48,13 @@ const convertNFAInput = (input: NFAInputProps): NFADataProps => {
 
   // men-generate transisi berdasarkan masukan yang diberikan pengguna
   for (const state of states) {
-    const strPairDestinations = input.transitions[state];
-    const pairDestinations = strPairDestinations.split(";");
-    for (let a = 0; a < alphabets.length; a++) {
-      const strDestinations = pairDestinations[a];
-      if (strDestinations && strDestinations.length > 0) {
-        transitions[state][alphabets[a]] = strDestinations.split(",");
+    for (const alphabet of alphabets) {
+      const transition = input.transitions[state][alphabet];
+      if (transition) {
+        transitions[state][alphabet].push(...transition.split(","));
       }
+
+      transitions[state][alphabet].sort();
     }
   }
 
@@ -92,17 +75,12 @@ const convertENFAInput = (input: ENFAInputProps): ENFADataProps => {
     [key: string]: string[];
   } = {};
 
-  // menginisialisasi empty epsilon transitions object
-  for (const state of states) {
-    epsilonTransitions[state] = [];
-  }
-
   // men-generate epsilon transitions berdasarkan masukan dari user
   for (const state of states) {
-    const strEpsilonDestinations = input.epsilons[state];
     epsilonTransitions[state] = [];
+    const strEpsilonDestinations = input.epsilonTransitions[state];
 
-    if (strEpsilonDestinations.length > 0) {
+    if (strEpsilonDestinations) {
       epsilonTransitions[state].push(...strEpsilonDestinations.split(","));
     }
 

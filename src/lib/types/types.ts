@@ -28,9 +28,10 @@ export type NFAInputProps = {
   states: string;
   startState: string;
   finalStates: string;
-  transitions: {
-    [key: string]: string;
-  };
+  // transitions: {
+  //   [key: string]: string;
+  // };
+  transitions: DiagramInputTransitionsProps;
 };
 
 export type NFADataProps = {
@@ -51,12 +52,14 @@ export type ENFAInputProps = {
   states: string;
   startState: string;
   finalStates: string;
-  transitions: {
-    [key: string]: string;
-  };
-  epsilons: {
-    [key: string]: string;
-  };
+  // transitions: {
+  //   [key: string]: string;
+  // };
+  // epsilons: {
+  //   [key: string]: string;
+  // };
+  transitions: DiagramInputTransitionsProps;
+  epsilonTransitions: DiagramInputEpsilonTransitionsProps;
 };
 
 export type ENFADataProps = {
