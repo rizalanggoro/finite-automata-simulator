@@ -21,17 +21,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavbarComponent />
-        <NextTopLoader
-          showSpinner={false}
-          height={4}
-          showAtBottom={false}
-          zIndex={11}
-          color="#65a30d"
-        />
-        {children}
+        <header>
+          <NavbarComponent />
+          <NextTopLoader
+            showSpinner={false}
+            height={4}
+            showAtBottom={false}
+            zIndex={11}
+            color="#65a30d"
+          />
+        </header>
 
-        <Toaster />
+        <main>
+          <Toaster />
+          {children}
+        </main>
       </body>
     </html>
   );
