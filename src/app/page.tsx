@@ -35,7 +35,7 @@ const menus: Array<MenuItem> = [
     icon: <Regex className="w-4 h-4" />,
     title: "Regex Konverter",
     description:
-      "Simulator untuk menghasilkan sebuah e-NFA sesuai dengan regular expression yang dimasukkan oleh pengguna",
+      "Simulator untuk menghasilkan sebuah E-NFA sesuai dengan regular expression yang dimasukkan oleh pengguna",
     href: "/v2/regex-converter",
   },
   {
@@ -54,9 +54,10 @@ const menus: Array<MenuItem> = [
   },
   {
     icon: <SpellCheck className="w-4 h-4" />,
-    title: "DFA, NFA, e-NFA, Regex Validator",
-    description: "lorem ipsum",
-    href: "/",
+    title: "DFA, NFA, E-NFA, Regex Validator",
+    description:
+      "Simulator untuk mengetes DFA, NFA, E-NFA, ataupun Regex terhadap masukan berupa string, apakah akan di-accept atau di-reject",
+    href: "/v2/fa-validator",
   },
 ];
 
