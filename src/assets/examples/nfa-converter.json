@@ -3,7 +3,7 @@
     "alphabets": ["0", "1"], 
     "states": ["a", "b"], 
     "startState": "a", 
-    "finalStates": "b", 
+    "finalStates": ["b"], 
     "transitions": {
       "a": {
         "0": "b",
@@ -19,7 +19,7 @@
     "alphabets": ["0", "1"], 
     "states": ["a", "b", "c"], 
     "startState": "a", 
-    "finalStates": "c", 
+    "finalStates": ["c"], 
     "transitions": {
       "a": {
         "0": "a",
