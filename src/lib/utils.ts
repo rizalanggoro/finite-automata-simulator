@@ -12,3 +12,10 @@ export const getStrings = (str: string, delimiter: string): string[] => {
 
   return [];
 };
+
+export const generateRandomStrings = (characters: string, length: number) => {
+  let result = "";
+  for (let a = 0; a < length; a++)
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  return result;
+};

@@ -1,0 +1,38 @@
+[
+  {
+    "alphabets": ["0", "1"],
+    "states": ["q0", "q1", "q2"],
+    "startState": "q0",
+    "finalStates": ["q2"],
+    "transitions": {
+      "q0": {
+        "0": "q0,q1",
+        "1": "q0"
+      },
+      "q1": {
+        "0": "",
+        "1": "q2"
+      },
+      "q2": {
+        "0": "",
+        "1": ""
+      }
+    }
+  },
+  {
+    "alphabets": ["0", "1"],
+    "states": ["a", "b"],
+    "startState": "a",
+    "finalStates": ["b"],
+    "transitions": {
+      "a": {
+        "0": "b",
+        "1": ""
+      },
+      "b": {
+        "0": "b",
+        "1": "b"
+      }
+    }
+  }
+]

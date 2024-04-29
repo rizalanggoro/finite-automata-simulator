@@ -1,8 +1,10 @@
 "use client";
 
+import dfaRegexValidatorExamples from "@/assets/examples/dfa-regex-validator.json";
 import BreadCrumbComponent from "@/components/breadcrumb";
 import ContainerComponent from "@/components/container";
 import DiagramInputComponent from "@/components/diagram-input";
+import MermaidComponent from "@/components/mermaid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,10 +15,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/components/ui/use-toast";
+import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
+import { diagramRepository } from "@/lib/repositories/v2/diagram";
+import { inputValidatorRepository } from "@/lib/repositories/v2/input-validator";
+import {
+  DFADataProps,
   DiagramInputEpsilonTransitionsProps,
   DiagramInputTransitionsProps,
+  ENFADataProps,
+  NFADataProps,
 } from "@/lib/types/types";
+import { generateRandomStrings } from "@/lib/utils";
 import { Dices, RotateCcw, SpellCheck } from "lucide-react";
 import { useState } from "react";
 
@@ -34,6 +54,79 @@ export default function Page() {
   const [inputFAType, setInputFAType] = useState<
     "dfa" | "nfa" | "enfa" | "regex" | string
   >("");
+  const [inputString, setInputString] = useState("");
+  const [exampleIndex, setExampleIndex] = useState({
+    dfa: 0,
+    nfa: 0,
+    enfa: 0,
+    regex: 0,
+  });
+  const [isGenerated, setIsGenerated] = useState(false);
+  const [result, setResult] = useState<{
+    isAccept: boolean;
+    history: {
+      str: string;
+      from: string;
+      to: string;
+    }[];
+  }>();
+  const [diagramData, setDiagramData] = useState<
+    DFADataProps | NFADataProps | ENFADataProps
+  >();
+  const [diagrams, setDiagrams] = useState<{
+    [key: string]: string;
+  }>({
+    dfa: "",
+    nfa: "",
+    enfa: "",
+    regex: "",
+  });
+  const { toast } = useToast();
+
+  const onClickButtonExample = () => {
+    if (inputFAType === "dfa") {
+      const exampleCount = dfaRegexValidatorExamples.length;
+      const example = dfaRegexValidatorExamples[exampleIndex.dfa];
+
+      setAlphabets(example.alphabets.join(","));
+      setStates(example.states.join(","));
+      setStartState(example.startState);
+      setFinalStates(example.finalStates.join(","));
+      setTimeout(() => setTransitions(example.transitions as any), 100);
+      setInputString(generateRandomStrings(example.alphabets.join(""), 5));
+
+      setExampleIndex({
+        ...exampleIndex,
+        dfa: exampleIndex.dfa < exampleCount - 1 ? exampleIndex.dfa + 1 : 0,
+      });
+    }
+
+    setIsGenerated(false);
+  };
+
+  const onClickButtonReset = () => {};
+
+  const onClickButtonCheck = () => {
+    if (inputFAType === "dfa") {
+      const dfaData = dataConverterRepository.convertDFAInput({
+        alphabets,
+        states,
+        startState,
+        finalStates,
+        transitions,
+      });
+      const result = inputValidatorRepository.validateInputForDFA(
+        dfaData,
+        inputString
+      );
+
+      setResult(result);
+      setDiagramData(dfaData);
+      setDiagrams({ ...diagrams, dfa: diagramRepository.generateDFA(dfaData) });
+      setIsGenerated(true);
+    } else if (inputFAType === "nfa") {
+    }
+  };
 
   return (
     <>
@@ -117,26 +210,90 @@ export default function Page() {
             <p className="text-lg font-semibold">String Uji</p>
             <p>
               Masukkan string yang akan diuji sesuai dengan kombinasi alphabets
-              (a,b,c)
+              ({alphabets})
             </p>
-            <Input className="mt-4" />
+            <Input
+              className="mt-4"
+              value={inputString}
+              onChange={(e) => setInputString(e.target.value.toLowerCase())}
+            />
           </div>
 
           <div className="flex items-center justify-end gap-1 mt-8">
-            <Button variant={"secondary"}>
+            <Button variant={"secondary"} onClick={onClickButtonExample}>
               <Dices className="w-4 h-4 mr-2" />
               Contoh
             </Button>
-            <Button variant={"destructive"}>
+            <Button variant={"destructive"} onClick={onClickButtonReset}>
               <RotateCcw className="w-4 h-4 mr-2" />
               Reset
             </Button>
-            <Button>
+            <Button onClick={onClickButtonCheck}>
               <SpellCheck className="w-4 h-4 mr-2" />
               Cek
             </Button>
           </div>
         </section>
+
+        {isGenerated && result && (
+          <>
+            <Separator className="mt-8" />
+
+            <section className="mt-8">
+              <p className="font-semibold text-xl">Transitions Table</p>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                cumque enim eos hic deserunt reprehenderit quos necessitatibus
+                tenetur iure architecto ea quidem dolorum delectus temporibus
+                sed sequi, praesentium et impedit!
+              </p>
+
+              <Table className="mt-4">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>State</TableHead>
+                    <TableHead>String</TableHead>
+                    <TableHead>From</TableHead>
+                    <TableHead>To</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {result.history.map((item, index) => {
+                    return (
+                      <TableRow key={"transitions-table-body-row-" + index}>
+                        <TableCell>{item.from}</TableCell>
+                        <TableCell>{item.str}</TableCell>
+                        <TableCell>{item.from}</TableCell>
+                        <TableCell>{item.to}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell>Acceptances</TableCell>
+                    <TableCell colSpan={3}>{String(result.isAccept)}</TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </section>
+
+            <section className="mt-8">
+              <p className="font-semibold text-xl">State Diagram</p>
+              <p>
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero,
+                incidunt soluta? Quibusdam dicta sapiente repellat quis placeat,
+                repudiandae blanditiis voluptatem qui sed natus sint, ut veniam.
+                Rem ex ullam quas!
+              </p>
+
+              <MermaidComponent
+                id="state-diagram"
+                chart={diagrams[inputFAType]}
+              />
+            </section>
+          </>
+        )}
       </ContainerComponent>
     </>
   );
