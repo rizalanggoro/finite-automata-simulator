@@ -343,7 +343,6 @@ export default function Page() {
               <Table className="mt-4">
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Step</TableHead>
                     <TableHead>String</TableHead>
                     <TableHead>From</TableHead>
                     <TableHead>To</TableHead>
@@ -353,7 +352,6 @@ export default function Page() {
                   {result.history.map((item, index) => {
                     return (
                       <TableRow key={"transitions-table-body-row-" + index}>
-                        <TableCell>{index + 1}</TableCell>
                         <TableCell>{item.str}</TableCell>
                         <TableCell>{item.from}</TableCell>
                         <TableCell>

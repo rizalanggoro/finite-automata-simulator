@@ -6,6 +6,8 @@ import ContainerComponent from "@/components/container";
 import DiagramInputComponent from "@/components/diagram-input";
 import MermaidComponent from "@/components/mermaid";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -21,8 +23,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
 import { dfaMinimizationRepository } from "@/lib/repositories/v2/dfa-minimization";
 import { diagramRepository } from "@/lib/repositories/v2/diagram";
+import { inputValidatorRepository } from "@/lib/repositories/v2/input-validator";
 import { DFADataProps, DiagramInputTransitionsProps } from "@/lib/types/types";
-import { Dices, Minimize2, RotateCcw } from "lucide-react";
+import { generateRandomStrings } from "@/lib/utils";
+import { Dices, Minimize2, RotateCcw, SpellCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Page() {
@@ -51,6 +55,25 @@ export default function Page() {
     minified: "",
   });
   const [isGenerated, setIsGenerated] = useState(false);
+  const [inputString, setInputString] = useState("");
+  const [resultValidateInputString, setResultValidateInputString] = useState<{
+    initial: {
+      isAccept: boolean;
+      history: {
+        str: string;
+        from: string;
+        to: string;
+      }[];
+    };
+    minified: {
+      isAccept: boolean;
+      history: {
+        str: string;
+        from: string;
+        to: string;
+      }[];
+    };
+  }>();
   const { toast } = useToast();
 
   const onClickButtonMinimize = () => {
@@ -88,6 +111,8 @@ export default function Page() {
     setFinalStates("");
     setTransitions({});
     setIsGenerated(false);
+    setInputString("");
+    setResultValidateInputString(undefined);
   };
 
   const onClickButtonExample = () => {
@@ -111,8 +136,44 @@ export default function Page() {
     });
   };
 
+  const onClickButtonExampleInputString = () => {
+    if (alphabets) {
+      const len = Math.floor(Math.random() * 8) + 3;
+      setInputString(generateRandomStrings(alphabets.replaceAll(",", ""), len));
+    }
+  };
+
+  const onClickButtonValidateInputString = () => {
+    if (minifiedDfa) {
+      const initialData = dataConverterRepository.convertDFAInput({
+        alphabets,
+        states,
+        startState,
+        finalStates,
+        transitions,
+      });
+      const initialResult = inputValidatorRepository.validateInputForDFA(
+        initialData,
+        inputString
+      );
+
+      const minifiedData = minifiedDfa.dfaData;
+      const minifiedResult = inputValidatorRepository.validateInputForDFA(
+        minifiedData,
+        inputString
+      );
+
+      setResultValidateInputString({
+        initial: initialResult,
+        minified: minifiedResult,
+      });
+    }
+  };
+
   useEffect(() => {
     setIsGenerated(false);
+    setInputString("");
+    setResultValidateInputString(undefined);
   }, [alphabets, states, startState, finalStates, transitions]);
 
   return (
@@ -290,6 +351,93 @@ export default function Page() {
                   />
                 </TabsContent>
               </Tabs>
+            </section>
+
+            <section className="mt-8">
+              <p className="font-semibold text-xl">Input String</p>
+              <p>
+                Cek masukan string untuk DFA yang belum diminimisasi dan DFA
+                yang sudah diminimisasi, apakah di-reject atau di-accept
+              </p>
+
+              <div className="mt-4 space-y-1">
+                <Label>Masukkan input string</Label>
+                <div className="flex items-center gap-1">
+                  <Input
+                    className="flex-1"
+                    value={inputString}
+                    onChange={(e) => setInputString(e.target.value)}
+                  />
+                  <Button
+                    variant={"secondary"}
+                    size={"icon"}
+                    onClick={onClickButtonExampleInputString}
+                  >
+                    <Dices className="w-4 h-4" />
+                  </Button>
+                  <Button onClick={onClickButtonValidateInputString}>
+                    <SpellCheck className="w-4 h-4 mr-2" />
+                    Cek
+                  </Button>
+                </div>
+              </div>
+
+              {resultValidateInputString && (
+                <Table className="mt-4">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead rowSpan={2}>String</TableHead>
+                      <TableHead colSpan={2}>Initial</TableHead>
+                      <TableHead colSpan={2}>Minimisasi</TableHead>
+                    </TableRow>
+                    <TableRow>
+                      <TableHead>From</TableHead>
+                      <TableHead>To</TableHead>
+                      <TableHead>From</TableHead>
+                      <TableHead>To</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {resultValidateInputString.initial.history.map(
+                      (initialItem, index) => (
+                        <TableRow
+                          key={
+                            "transitions-table-input-validator-body-row-" +
+                            index
+                          }
+                        >
+                          <TableCell>{initialItem.str}</TableCell>
+                          <TableCell>{initialItem.from}</TableCell>
+                          <TableCell>{initialItem.to}</TableCell>
+                          <TableCell>
+                            {
+                              resultValidateInputString.minified.history[index]
+                                .from
+                            }
+                          </TableCell>
+                          <TableCell>
+                            {
+                              resultValidateInputString.minified.history[index]
+                                .to
+                            }
+                          </TableCell>
+                        </TableRow>
+                      )
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell>Acceptances</TableCell>
+                      <TableCell colSpan={2}>
+                        {String(resultValidateInputString.initial.isAccept)}
+                      </TableCell>
+                      <TableCell colSpan={2}>
+                        {String(resultValidateInputString.minified.isAccept)}
+                      </TableCell>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              )}
             </section>
           </>
         )}
