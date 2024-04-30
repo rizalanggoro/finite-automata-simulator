@@ -1,5 +1,6 @@
 import { DFADataProps, ENFADataProps, NFADataProps } from "@/lib/types/types";
-import { EpsilonNFAValidator } from "@/lib/validators/enfa";
+import EpsilonNFAValidator from "@/lib/validators/enfa";
+import NFAValidator from "@/lib/validators/nfa";
 
 const validateInputForDFA = (data: DFADataProps, inputString: string) => {
   const history: Array<{
@@ -38,36 +39,15 @@ const validateInputForNFA = (data: NFADataProps, inputString: string) => {
     to: string[];
   }> = [];
 
-  const inputStrings = inputString.split("");
-
-  let currentStates: string[] = [];
-  currentStates.push(data.startState);
-
-  for (const symbol of inputStrings) {
-    let nextStates: string[] = [];
-
-    for (const state of currentStates) {
-      console.log({ symbol, state });
-      let possibleStates = data.transitions[state][symbol];
-      nextStates = [...nextStates, ...possibleStates];
-
-      history.push({
-        str: symbol,
-        from: state,
-        to: possibleStates,
-      });
-    }
-
-    currentStates = nextStates;
-  }
-
-  let isAccept = false;
-  for (const currentState of currentStates) {
-    if (data.finalStates.includes(currentState)) {
-      isAccept = true;
-      break;
-    }
-  }
+  const nfaValidator = new NFAValidator(
+    data.states,
+    data.alphabets,
+    data.transitions,
+    data.startState,
+    data.finalStates,
+    history
+  );
+  const isAccept = nfaValidator.validate(inputString);
 
   return {
     isAccept,

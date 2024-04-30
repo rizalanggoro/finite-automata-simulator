@@ -1,4 +1,4 @@
-export class EpsilonNFAValidator {
+export default class EpsilonNFAValidator {
   constructor(
     states,
     alphabet,
