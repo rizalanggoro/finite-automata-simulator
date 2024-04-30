@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
 import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
 import { dfaEquivalenceRepository } from "@/lib/repositories/v2/dfa-equivalence";
 import { diagramRepository } from "@/lib/repositories/v2/diagram";
@@ -57,6 +58,7 @@ export default function Page() {
     dfa2: "",
   });
   const [isGenerated, setIsGenerated] = useState(false);
+  const { toast } = useToast();
 
   const onClickButtonExample = () => {
     const example = dfaEquivalenceExamples[exampleIndex];
@@ -78,6 +80,13 @@ export default function Page() {
     setExampleIndex(
       exampleIndex < dfaEquivalenceExamples.length - 1 ? exampleIndex + 1 : 0
     );
+    toast({
+      description:
+        "Menggunakan contoh DFA ekuivalensi ke-" +
+        (exampleIndex + 1) +
+        " dari " +
+        dfaEquivalenceExamples.length,
+    });
   };
 
   const onClickButtonReset = () => {
