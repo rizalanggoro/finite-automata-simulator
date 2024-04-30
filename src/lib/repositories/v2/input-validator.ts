@@ -36,7 +36,7 @@ const validateInputForNFA = (data: NFADataProps, inputString: string) => {
   const history: Array<{
     str: string;
     from: string;
-    to: string[];
+    to: string;
   }> = [];
 
   const nfaValidator = new NFAValidator(
@@ -59,7 +59,7 @@ const validateInputForENFA = (data: ENFADataProps, inputString: string) => {
   const history: Array<{
     str: string;
     from: string;
-    to: string[];
+    to: string;
   }> = [];
 
   const getCombinedData = (): NFADataProps => {

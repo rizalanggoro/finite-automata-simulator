@@ -286,6 +286,37 @@ const nfaDisplay = {
   },
 };
 
+const refineENFA = (data: ENFADataProps) => {
+  const result: ENFADataProps = {
+    alphabets: data.alphabets,
+    states: data.states,
+    startState: data.startState,
+    finalStates: data.finalStates,
+    transitions: {},
+    epsilonTransitions: {},
+  };
+
+  for (const state of data.states) {
+    result.transitions[state] = {};
+
+    for (const alphabet of data.alphabets) {
+      if (data.transitions[state] && data.transitions[state][alphabet]) {
+        result.transitions[state][alphabet] = data.transitions[state][alphabet];
+      } else {
+        result.transitions[state][alphabet] = [];
+      }
+    }
+
+    if (data.epsilonTransitions[state]) {
+      result.epsilonTransitions[state] = data.epsilonTransitions[state];
+    } else {
+      result.epsilonTransitions[state] = [];
+    }
+  }
+
+  return result;
+};
+
 const convertRegexToENFA = (regex: string) => {
   const ast = syntaxTreeParser.parseRegex(regex);
   if (typeof ast === "string") {
@@ -300,10 +331,11 @@ const convertRegexToENFA = (regex: string) => {
   }
 
   const enfaData = nfaDisplay.displayNfa(nfa);
+  const refinedEnfaData = refineENFA(enfaData);
 
   return {
     others: { regex, ast },
-    enfaData,
+    enfaData: refinedEnfaData,
   };
 };
 

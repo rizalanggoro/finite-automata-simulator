@@ -3,6 +3,7 @@
 import dfaValidatorExamples from "@/assets/examples/dfa-validator.json";
 import enfaValidatorExamples from "@/assets/examples/enfa-validator.json";
 import nfaValidatorExamples from "@/assets/examples/nfa-validator.json";
+import regexValidatorExamples from "@/assets/examples/regex-validator.json";
 import BreadCrumbComponent from "@/components/breadcrumb";
 import ContainerComponent from "@/components/container";
 import DiagramInputComponent from "@/components/diagram-input";
@@ -31,6 +32,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { dataConverterRepository } from "@/lib/repositories/v2/data-converter";
 import { diagramRepository } from "@/lib/repositories/v2/diagram";
 import { inputValidatorRepository } from "@/lib/repositories/v2/input-validator";
+import { regexConverterRepository } from "@/lib/repositories/v2/regex-converter";
 import {
   DiagramInputEpsilonTransitionsProps,
   DiagramInputTransitionsProps,
@@ -49,6 +51,7 @@ export default function Page() {
   );
   const [epsilonTransitions, setEpsilonTransitions] =
     useState<DiagramInputEpsilonTransitionsProps>({});
+  const [inputRegex, setInputRegex] = useState("");
 
   const [inputFAType, setInputFAType] = useState<
     "dfa" | "nfa" | "enfa" | "regex" | string
@@ -66,7 +69,7 @@ export default function Page() {
     history: {
       str: string;
       from: string;
-      to: string | string[];
+      to: string;
     }[];
   }>();
   const [diagrams, setDiagrams] = useState<{
@@ -146,6 +149,19 @@ export default function Page() {
         ...exampleIndex,
         enfa: exampleIndex.enfa < exampleCount - 1 ? exampleIndex.enfa + 1 : 0,
       });
+    } else if (inputFAType === "regex") {
+      exampleCount = regexValidatorExamples.length;
+      index = exampleIndex.regex + 1;
+      const example = regexValidatorExamples[exampleIndex.regex];
+      name = "Regex";
+
+      setInputRegex(example);
+
+      setExampleIndex({
+        ...exampleIndex,
+        regex:
+          exampleIndex.regex < exampleCount - 1 ? exampleIndex.regex + 1 : 0,
+      });
     }
 
     toast({
@@ -167,6 +183,7 @@ export default function Page() {
     setFinalStates("");
     setTransitions({});
     setEpsilonTransitions({});
+    setInputRegex("");
     setInputFAType("");
     setInputString("");
     setIsGenerated(false);
@@ -223,6 +240,24 @@ export default function Page() {
       setResult(result);
       setDiagrams({ ...diagrams, enfa: diagramRepository.generateE_NFA(data) });
       setIsGenerated(true);
+    } else if (inputFAType === "regex") {
+      const resultRegexToENFA =
+        regexConverterRepository.convertRegexToENFA(inputRegex);
+
+      if (resultRegexToENFA) {
+        const data = resultRegexToENFA.enfaData;
+        const result = inputValidatorRepository.validateInputForENFA(
+          data,
+          inputString
+        );
+
+        setResult(result);
+        setDiagrams({
+          ...diagrams,
+          regex: diagramRepository.generateE_NFA(data),
+        });
+        setIsGenerated(true);
+      }
     }
   };
 
@@ -243,6 +278,7 @@ export default function Page() {
     setInputString("");
     setIsGenerated(false);
     setResult(undefined);
+    setInputRegex("");
   }, [inputFAType]);
 
   useEffect(() => {
@@ -255,21 +291,8 @@ export default function Page() {
     transitions,
     epsilonTransitions,
     inputString,
+    inputRegex,
   ]);
-
-  // const example = enfaValidatorExamples[1];
-  // const dataExample = dataConverterRepository.convertENFAInput({
-  //   alphabets: example.alphabets.join(","),
-  //   states: example.states.join(","),
-  //   startState: example.startState,
-  //   finalStates: example.finalStates.join(","),
-  //   transitions: example.transitions as any,
-  //   epsilonTransitions: example.epsilonTransitions as any,
-  // });
-  // const resultExample = inputValidatorRepository.validateInputForENFA(
-  //   dataExample,
-  //   "011"
-  // );
 
   return (
     <>
@@ -322,7 +345,10 @@ export default function Page() {
               <>
                 <div className="space-y-1 mt-2">
                   <Label>Masukkan regular expression</Label>
-                  <Input />
+                  <Input
+                    value={inputRegex}
+                    onChange={(e) => setInputRegex(e.target.value)}
+                  />
                 </div>
               </>
             ) : (
@@ -349,7 +375,8 @@ export default function Page() {
               </>
             ))}
 
-          {alphabets && (
+          {((inputFAType !== "regex" && alphabets) ||
+            inputFAType === "regex") && (
             <div className="mt-6">
               <p className="text-lg font-semibold">String Uji</p>
               <p>
@@ -362,13 +389,15 @@ export default function Page() {
                   value={inputString}
                   onChange={(e) => setInputString(e.target.value.toLowerCase())}
                 />
-                <Button
-                  size={"icon"}
-                  variant={"secondary"}
-                  onClick={onClickButtonExampleInputString}
-                >
-                  <Dices className="w-4 h-4" />
-                </Button>
+                {inputFAType !== "regex" && (
+                  <Button
+                    size={"icon"}
+                    variant={"secondary"}
+                    onClick={onClickButtonExampleInputString}
+                  >
+                    <Dices className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
             </div>
           )}
