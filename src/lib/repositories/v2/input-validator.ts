@@ -1,4 +1,5 @@
-import { DFADataProps, NFADataProps } from "@/lib/types/types";
+import { DFADataProps, ENFADataProps, NFADataProps } from "@/lib/types/types";
+import { EpsilonNFAValidator } from "@/lib/validators/enfa";
 
 const validateInputForDFA = (data: DFADataProps, inputString: string) => {
   const history: Array<{
@@ -74,7 +75,50 @@ const validateInputForNFA = (data: NFADataProps, inputString: string) => {
   };
 };
 
-const validateInputForENFA = () => {};
+const validateInputForENFA = (data: ENFADataProps, inputString: string) => {
+  const history: Array<{
+    str: string;
+    from: string;
+    to: string[];
+  }> = [];
+
+  const getCombinedData = (): NFADataProps => {
+    const combinedDataTransitions: {
+      [key: string]: {
+        [key: string]: string[];
+      };
+    } = {};
+
+    for (const [key, value] of Object.entries(data.transitions)) {
+      combinedDataTransitions[key] = value;
+      combinedDataTransitions[key]["ε"] = data.epsilonTransitions[key];
+    }
+
+    return {
+      alphabets: data.alphabets,
+      states: data.states,
+      startState: data.startState,
+      finalStates: data.finalStates,
+      transitions: combinedDataTransitions,
+    };
+  };
+
+  const combinedData = getCombinedData();
+  const epsilonNfaValidator = new EpsilonNFAValidator(
+    combinedData.states,
+    combinedData.alphabets,
+    combinedData.transitions,
+    combinedData.startState,
+    combinedData.finalStates,
+    history
+  );
+  const isAccept = epsilonNfaValidator.validate(inputString);
+
+  return {
+    isAccept,
+    history,
+  };
+};
 
 const validateInputForRegex = () => {};
 

@@ -1,6 +1,7 @@
 "use client";
 
 import dfaValidatorExamples from "@/assets/examples/dfa-validator.json";
+import enfaValidatorExamples from "@/assets/examples/enfa-validator.json";
 import nfaValidatorExamples from "@/assets/examples/nfa-validator.json";
 import BreadCrumbComponent from "@/components/breadcrumb";
 import ContainerComponent from "@/components/container";
@@ -79,6 +80,13 @@ export default function Page() {
   const { toast } = useToast();
 
   const onClickButtonExample = () => {
+    if (!inputFAType) {
+      toast({
+        description: "Silahkan pilih jenis finite automata terlebih dahulu!",
+      });
+      return;
+    }
+
     let exampleCount = 0;
     let index = 0;
     let name = "";
@@ -116,6 +124,27 @@ export default function Page() {
       setExampleIndex({
         ...exampleIndex,
         nfa: exampleIndex.nfa < exampleCount - 1 ? exampleIndex.nfa + 1 : 0,
+      });
+    } else if (inputFAType === "enfa") {
+      exampleCount = enfaValidatorExamples.length;
+      index = exampleIndex.enfa + 1;
+      const example = enfaValidatorExamples[exampleIndex.enfa];
+      name = "E-NFA";
+
+      setAlphabets(example.alphabets.join(","));
+      setStates(example.states.join(","));
+      setStartState(example.startState);
+      setFinalStates(example.finalStates.join(","));
+      setTimeout(() => setTransitions(example.transitions as any), 100);
+      setTimeout(
+        () => setEpsilonTransitions(example.epsilonTransitions as any),
+        100
+      );
+      setInputString(generateRandomStrings(example.alphabets.join(""), 5));
+
+      setExampleIndex({
+        ...exampleIndex,
+        enfa: exampleIndex.enfa < exampleCount - 1 ? exampleIndex.enfa + 1 : 0,
       });
     }
 
@@ -177,6 +206,23 @@ export default function Page() {
       setResult(result);
       setDiagrams({ ...diagrams, nfa: diagramRepository.generateNFA(data) });
       setIsGenerated(true);
+    } else if (inputFAType === "enfa") {
+      const data = dataConverterRepository.convertENFAInput({
+        alphabets,
+        states,
+        startState,
+        finalStates,
+        transitions,
+        epsilonTransitions,
+      });
+      const result = inputValidatorRepository.validateInputForENFA(
+        data,
+        inputString
+      );
+
+      setResult(result);
+      setDiagrams({ ...diagrams, enfa: diagramRepository.generateE_NFA(data) });
+      setIsGenerated(true);
     }
   };
 
@@ -210,6 +256,20 @@ export default function Page() {
     epsilonTransitions,
     inputString,
   ]);
+
+  // const example = enfaValidatorExamples[1];
+  // const dataExample = dataConverterRepository.convertENFAInput({
+  //   alphabets: example.alphabets.join(","),
+  //   states: example.states.join(","),
+  //   startState: example.startState,
+  //   finalStates: example.finalStates.join(","),
+  //   transitions: example.transitions as any,
+  //   epsilonTransitions: example.epsilonTransitions as any,
+  // });
+  // const resultExample = inputValidatorRepository.validateInputForENFA(
+  //   dataExample,
+  //   "011"
+  // );
 
   return (
     <>
