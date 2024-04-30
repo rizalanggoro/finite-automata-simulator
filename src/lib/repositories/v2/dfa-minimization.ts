@@ -156,12 +156,35 @@ const generateNewTransitions = (
   return transitions;
 };
 
+const generateNewStartState = (
+  data: DFADataProps,
+  equivalences: {
+    [key: string]: string[];
+  }
+) => {
+  let result = "";
+
+  if (Object.keys(equivalences).includes(data.startState)) {
+    result = data.startState;
+  } else {
+    for (const [key, value] of Object.entries(equivalences)) {
+      if (value.includes(data.startState)) {
+        result = key;
+        break;
+      }
+    }
+  }
+
+  return result;
+};
+
 const convertDFAToMinifiedDFA = (data: DFADataProps) => {
   const subsets = generateSubsets(data);
   const newStates = generateNewStates(subsets);
   const equivalences = generateEquivalences(subsets, newStates);
   const newFinalStates = generateNewFinalStates(data, equivalences);
   const newTransitions = generateNewTransitions(data, newStates, equivalences);
+  const newStartState = generateNewStartState(data, equivalences);
 
   return {
     others: {
@@ -174,7 +197,7 @@ const convertDFAToMinifiedDFA = (data: DFADataProps) => {
     dfaData: {
       alphabets: data.alphabets,
       states: newStates,
-      startState: data.startState, // perlu diperbaiki
+      startState: newStartState,
       finalStates: newFinalStates,
       transitions: newTransitions,
     } as DFADataProps,
